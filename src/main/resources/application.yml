@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: my-pt-ai
+  profiles:
+    active: local
+
+server:
+  port: 8080
