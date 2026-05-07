@@ -1,0 +1,5 @@
+ALTER TABLE app_user ADD COLUMN height_cm INT NULL;
+ALTER TABLE app_user ADD COLUMN weight_kg DECIMAL(5, 2) NULL;
+ALTER TABLE app_user ADD COLUMN activity_level VARCHAR(30) NULL;
+ALTER TABLE app_user ADD COLUMN food_preference VARCHAR(500) NULL;
+ALTER TABLE app_user ADD COLUMN restrictions VARCHAR(500) NULL;

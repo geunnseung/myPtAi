@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>프로필 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}" aria-current="page">프로필</a>
+            <a href="#" aria-disabled="true">식단</a>
+            <a href="#" aria-disabled="true">운동</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>사용자 프로필</h1>
+        <p>AI 코칭과 기록 분석에 사용할 기본 정보를 관리합니다.</p>
+    </div>
+
+    <div class="flash-message" th:if="${message}" th:text="${message}"></div>
+
+    <section class="panel">
+        <form th:action="@{/profile}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="displayName">이름</label>
+                    <input id="displayName" type="text" th:field="*{displayName}" placeholder="예: 민수">
+                    <div class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="goal">목표</label>
+                    <select id="goal" th:field="*{goal}">
+                        <option th:each="goalType : ${goalTypes}"
+                                th:value="${goalType}"
+                                th:text="${goalType.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('goal')}" th:errors="*{goal}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="heightCm">키(cm)</label>
+                    <input id="heightCm" type="number" th:field="*{heightCm}" min="80" max="230" placeholder="예: 175">
+                    <div class="field-error" th:if="${#fields.hasErrors('heightCm')}" th:errors="*{heightCm}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="weightKg">체중(kg)</label>
+                    <input id="weightKg" type="number" th:field="*{weightKg}" min="25" max="250" step="0.1" placeholder="예: 72.5">
+                    <div class="field-error" th:if="${#fields.hasErrors('weightKg')}" th:errors="*{weightKg}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="activityLevel">활동량</label>
+                    <select id="activityLevel" th:field="*{activityLevel}">
+                        <option th:each="activityLevel : ${activityLevels}"
+                                th:value="${activityLevel}"
+                                th:text="${activityLevel.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('activityLevel')}" th:errors="*{activityLevel}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="foodPreference">선호 식단</label>
+                    <textarea id="foodPreference"
+                              th:field="*{foodPreference}"
+                              rows="3"
+                              placeholder="예: 한식 위주, 아침은 간단히, 닭가슴살 가능"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('foodPreference')}" th:errors="*{foodPreference}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="restrictions">제한사항</label>
+                    <textarea id="restrictions"
+                              th:field="*{restrictions}"
+                              rows="3"
+                              placeholder="예: 유당불내증, 무릎 통증, 야근이 잦음"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('restrictions')}" th:errors="*{restrictions}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">프로필 저장</button>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
