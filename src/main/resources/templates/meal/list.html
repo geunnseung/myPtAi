@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>식단 기록 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}" aria-current="page">식단</a>
+            <a href="#" aria-disabled="true">운동</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>식단 기록</h1>
+            <p>날짜별 식사와 영양 정보를 기록합니다.</p>
+        </div>
+        <form class="date-filter" th:action="@{/meals}" method="get">
+            <label for="date">기록 날짜</label>
+            <input id="date" name="date" type="date" th:value="${recordedOn}">
+            <button class="button button--secondary" type="submit">조회</button>
+        </form>
+    </div>
+
+    <div class="flash-message" th:if="${message}" th:text="${message}"></div>
+
+    <section class="summary-grid" aria-label="식단 합계">
+        <article class="summary-card">
+            <span>총 칼로리</span>
+            <strong th:text="${summary.totalCalories()} + ' kcal'">0 kcal</strong>
+        </article>
+        <article class="summary-card">
+            <span>단백질</span>
+            <strong th:text="${summary.totalProteinG()} + ' g'">0 g</strong>
+        </article>
+        <article class="summary-card">
+            <span>탄수화물</span>
+            <strong th:text="${summary.totalCarbsG()} + ' g'">0 g</strong>
+        </article>
+        <article class="summary-card">
+            <span>지방</span>
+            <strong th:text="${summary.totalFatG()} + ' g'">0 g</strong>
+        </article>
+    </section>
+
+    <section class="panel section-gap">
+        <h2 class="section-title">식단 추가</h2>
+        <form th:action="@{/meals}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="recordedOn">기록 날짜</label>
+                    <input id="recordedOn" type="date" th:field="*{recordedOn}">
+                    <div class="field-error" th:if="${#fields.hasErrors('recordedOn')}" th:errors="*{recordedOn}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="mealType">식사 구분</label>
+                    <select id="mealType" th:field="*{mealType}">
+                        <option th:each="mealType : ${mealTypes}"
+                                th:value="${mealType}"
+                                th:text="${mealType.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="name">메뉴명</label>
+                    <input id="name" type="text" th:field="*{name}" placeholder="예: 현미밥, 닭가슴살, 샐러드">
+                    <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="calories">칼로리(kcal)</label>
+                    <input id="calories" type="number" th:field="*{calories}" min="0" max="10000" placeholder="예: 650">
+                    <div class="field-error" th:if="${#fields.hasErrors('calories')}" th:errors="*{calories}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="proteinG">단백질(g)</label>
+                    <input id="proteinG" type="number" th:field="*{proteinG}" min="0" max="999.99" step="0.1" placeholder="예: 35">
+                    <div class="field-error" th:if="${#fields.hasErrors('proteinG')}" th:errors="*{proteinG}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="carbsG">탄수화물(g)</label>
+                    <input id="carbsG" type="number" th:field="*{carbsG}" min="0" max="999.99" step="0.1" placeholder="예: 70">
+                    <div class="field-error" th:if="${#fields.hasErrors('carbsG')}" th:errors="*{carbsG}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="fatG">지방(g)</label>
+                    <input id="fatG" type="number" th:field="*{fatG}" min="0" max="999.99" step="0.1" placeholder="예: 18">
+                    <div class="field-error" th:if="${#fields.hasErrors('fatG')}" th:errors="*{fatG}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="memo">메모</label>
+                    <textarea id="memo" th:field="*{memo}" rows="3" placeholder="예: 외식, 식욕, 포만감, 특이사항"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">식단 추가</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel section-gap">
+        <div class="section-heading">
+            <h2 class="section-title">선택 날짜 기록</h2>
+            <span class="muted" th:text="${recordedOn}">2026-01-01</span>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(meals)}">
+            선택한 날짜의 식단 기록이 없습니다.
+        </div>
+
+        <div class="record-list" th:unless="${#lists.isEmpty(meals)}">
+            <article class="record-item" th:each="meal : ${meals}">
+                <div class="record-item__main">
+                    <span class="pill" th:text="${meal.mealType().label}">아침</span>
+                    <h3 th:text="${meal.name()}">현미밥</h3>
+                    <p class="muted"
+                       th:text="|${meal.calories() ?: 0} kcal · 단백질 ${meal.proteinG() ?: 0}g · 탄수화물 ${meal.carbsG() ?: 0}g · 지방 ${meal.fatG() ?: 0}g|">
+                        0 kcal
+                    </p>
+                    <p th:if="${meal.memo()}" th:text="${meal.memo()}">메모</p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary" th:href="@{/meals/{id}/edit(id=${meal.id()})}">수정</a>
+                    <form th:action="@{/meals/{id}/delete(id=${meal.id()}, date=${recordedOn})}" method="post">
+                        <button class="button button--danger" type="submit">삭제</button>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>

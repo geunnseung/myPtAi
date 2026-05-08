@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>식단 수정 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}" aria-current="page">식단</a>
+            <a href="#" aria-disabled="true">운동</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>식단 수정</h1>
+        <p>기록한 식단의 날짜, 메뉴, 영양 정보를 수정합니다.</p>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/meals/{id}(id=${mealRecordId})}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="recordedOn">기록 날짜</label>
+                    <input id="recordedOn" type="date" th:field="*{recordedOn}">
+                    <div class="field-error" th:if="${#fields.hasErrors('recordedOn')}" th:errors="*{recordedOn}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="mealType">식사 구분</label>
+                    <select id="mealType" th:field="*{mealType}">
+                        <option th:each="mealType : ${mealTypes}"
+                                th:value="${mealType}"
+                                th:text="${mealType.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="name">메뉴명</label>
+                    <input id="name" type="text" th:field="*{name}">
+                    <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="calories">칼로리(kcal)</label>
+                    <input id="calories" type="number" th:field="*{calories}" min="0" max="10000">
+                    <div class="field-error" th:if="${#fields.hasErrors('calories')}" th:errors="*{calories}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="proteinG">단백질(g)</label>
+                    <input id="proteinG" type="number" th:field="*{proteinG}" min="0" max="999.99" step="0.1">
+                    <div class="field-error" th:if="${#fields.hasErrors('proteinG')}" th:errors="*{proteinG}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="carbsG">탄수화물(g)</label>
+                    <input id="carbsG" type="number" th:field="*{carbsG}" min="0" max="999.99" step="0.1">
+                    <div class="field-error" th:if="${#fields.hasErrors('carbsG')}" th:errors="*{carbsG}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="fatG">지방(g)</label>
+                    <input id="fatG" type="number" th:field="*{fatG}" min="0" max="999.99" step="0.1">
+                    <div class="field-error" th:if="${#fields.hasErrors('fatG')}" th:errors="*{fatG}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="memo">메모</label>
+                    <textarea id="memo" th:field="*{memo}" rows="3"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">식단 수정</button>
+                <a class="button button--secondary" th:href="@{/meals(date=*{recordedOn})}">목록으로</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>
