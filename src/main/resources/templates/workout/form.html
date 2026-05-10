@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>운동 수정 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}">식단</a>
+            <a th:href="@{/workouts}" aria-current="page">운동</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>운동 수정</h1>
+        <p>기록한 운동의 날짜, 루틴, 강도, 메모를 수정합니다.</p>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/workouts/{id}(id=${workoutRecordId})}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="recordedOn">기록 날짜</label>
+                    <input id="recordedOn" type="date" th:field="*{recordedOn}">
+                    <div class="field-error" th:if="${#fields.hasErrors('recordedOn')}" th:errors="*{recordedOn}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="workoutType">운동 종류</label>
+                    <select id="workoutType" th:field="*{workoutType}">
+                        <option th:each="workoutType : ${workoutTypes}"
+                                th:value="${workoutType}"
+                                th:text="${workoutType.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('workoutType')}" th:errors="*{workoutType}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="title">운동명</label>
+                    <input id="title" type="text" th:field="*{title}">
+                    <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="durationMinutes">운동 시간(분)</label>
+                    <input id="durationMinutes" type="number" th:field="*{durationMinutes}" min="0" max="1440">
+                    <div class="field-error" th:if="${#fields.hasErrors('durationMinutes')}" th:errors="*{durationMinutes}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="intensity">강도</label>
+                    <select id="intensity" th:field="*{intensity}">
+                        <option th:each="workoutIntensity : ${workoutIntensities}"
+                                th:value="${workoutIntensity}"
+                                th:text="${workoutIntensity.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('intensity')}" th:errors="*{intensity}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="memo">메모</label>
+                    <textarea id="memo" th:field="*{memo}" rows="3"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">운동 수정</button>
+                <a class="button button--secondary" th:href="@{/workouts(date=*{recordedOn})}">목록으로</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

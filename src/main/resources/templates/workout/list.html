@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>운동 기록 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}">식단</a>
+            <a th:href="@{/workouts}" aria-current="page">운동</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>운동 기록</h1>
+            <p>날짜별 운동 루틴과 컨디션을 기록합니다.</p>
+        </div>
+        <form class="date-filter" th:action="@{/workouts}" method="get">
+            <label for="date">기록 날짜</label>
+            <input id="date" name="date" type="date" th:value="${recordedOn}">
+            <button class="button button--secondary" type="submit">조회</button>
+        </form>
+    </div>
+
+    <div class="flash-message" th:if="${message}" th:text="${message}"></div>
+
+    <section class="summary-grid" aria-label="운동 합계">
+        <article class="summary-card">
+            <span>운동 기록</span>
+            <strong th:text="${summary.recordCount()} + '개'">0개</strong>
+        </article>
+        <article class="summary-card">
+            <span>총 운동 시간</span>
+            <strong th:text="${summary.totalDurationMinutes()} + '분'">0분</strong>
+        </article>
+        <article class="summary-card">
+            <span>고강도 기록</span>
+            <strong th:text="${summary.hardWorkoutCount()} + '개'">0개</strong>
+        </article>
+    </section>
+
+    <section class="panel section-gap">
+        <h2 class="section-title">운동 추가</h2>
+        <form th:action="@{/workouts}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="recordedOn">기록 날짜</label>
+                    <input id="recordedOn" type="date" th:field="*{recordedOn}">
+                    <div class="field-error" th:if="${#fields.hasErrors('recordedOn')}" th:errors="*{recordedOn}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="workoutType">운동 종류</label>
+                    <select id="workoutType" th:field="*{workoutType}">
+                        <option th:each="workoutType : ${workoutTypes}"
+                                th:value="${workoutType}"
+                                th:text="${workoutType.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('workoutType')}" th:errors="*{workoutType}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="title">운동명</label>
+                    <input id="title" type="text" th:field="*{title}" placeholder="예: 하체 루틴 A">
+                    <div class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="durationMinutes">운동 시간(분)</label>
+                    <input id="durationMinutes" type="number" th:field="*{durationMinutes}" min="0" max="1440" placeholder="예: 60">
+                    <div class="field-error" th:if="${#fields.hasErrors('durationMinutes')}" th:errors="*{durationMinutes}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="intensity">강도</label>
+                    <select id="intensity" th:field="*{intensity}">
+                        <option th:each="workoutIntensity : ${workoutIntensities}"
+                                th:value="${workoutIntensity}"
+                                th:text="${workoutIntensity.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('intensity')}" th:errors="*{intensity}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="memo">메모</label>
+                    <textarea id="memo" th:field="*{memo}" rows="3" placeholder="예: 스쿼트 5x5, RPE 7, 무릎 통증 없음"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">운동 추가</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel section-gap">
+        <div class="section-heading">
+            <h2 class="section-title">선택 날짜 기록</h2>
+            <span class="muted" th:text="${recordedOn}">2026-01-01</span>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(workouts)}">
+            선택한 날짜의 운동 기록이 없습니다.
+        </div>
+
+        <div class="record-list" th:unless="${#lists.isEmpty(workouts)}">
+            <article class="record-item" th:each="workout : ${workouts}">
+                <div class="record-item__main">
+                    <span class="pill" th:text="${workout.workoutType().label}">웨이트</span>
+                    <h3 th:text="${workout.title()}">하체 루틴 A</h3>
+                    <p class="muted"
+                       th:text="|${workout.durationMinutes() ?: 0}분 · 강도 ${workout.intensity() == null ? '-' : workout.intensity().label}|">
+                        0분
+                    </p>
+                    <p th:if="${workout.memo()}" th:text="${workout.memo()}">메모</p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary" th:href="@{/workouts/{id}/edit(id=${workout.id()})}">수정</a>
+                    <form th:action="@{/workouts/{id}/delete(id=${workout.id()}, date=${recordedOn})}" method="post">
+                        <button class="button button--danger" type="submit">삭제</button>
+                    </form>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>
