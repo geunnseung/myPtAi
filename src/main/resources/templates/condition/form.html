@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>컨디션 기록 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}">식단</a>
+            <a th:href="@{/workouts}">운동</a>
+            <a th:href="@{/conditions}" aria-current="page">컨디션</a>
+            <a href="#" aria-disabled="true">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>컨디션 기록</h1>
+            <p>수면, 체중, 하루 컨디션을 날짜별로 관리합니다.</p>
+        </div>
+        <form class="date-filter" th:action="@{/conditions}" method="get">
+            <label for="date">기록 날짜</label>
+            <input id="date" name="date" type="date" th:value="${recordedOn}">
+            <button class="button button--secondary" type="submit">조회</button>
+        </form>
+    </div>
+
+    <div class="flash-message" th:if="${message}" th:text="${message}"></div>
+
+    <section class="summary-grid" aria-label="컨디션 요약">
+        <article class="summary-card">
+            <span>수면</span>
+            <strong th:text="${condition == null || condition.sleepMinutes() == null ? '-' : condition.sleepMinutes() + '분'}">-</strong>
+        </article>
+        <article class="summary-card">
+            <span>체중</span>
+            <strong th:text="${condition == null || condition.bodyWeightKg() == null ? '-' : condition.bodyWeightKg() + 'kg'}">-</strong>
+        </article>
+        <article class="summary-card">
+            <span>컨디션</span>
+            <strong th:text="${condition == null || condition.energyLevel() == null ? '-' : condition.energyLevel().label}">-</strong>
+        </article>
+    </section>
+
+    <section class="panel section-gap">
+        <h2 class="section-title">컨디션 저장</h2>
+        <form th:action="@{/conditions}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="recordedOn">기록 날짜</label>
+                    <input id="recordedOn" type="date" th:field="*{recordedOn}">
+                    <div class="field-error" th:if="${#fields.hasErrors('recordedOn')}" th:errors="*{recordedOn}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="sleepMinutes">수면 시간(분)</label>
+                    <input id="sleepMinutes" type="number" th:field="*{sleepMinutes}" min="0" max="1440" placeholder="예: 420">
+                    <div class="field-error" th:if="${#fields.hasErrors('sleepMinutes')}" th:errors="*{sleepMinutes}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="bodyWeightKg">체중(kg)</label>
+                    <input id="bodyWeightKg" type="number" th:field="*{bodyWeightKg}" min="25" max="250" step="0.1" placeholder="예: 72.5">
+                    <div class="field-error" th:if="${#fields.hasErrors('bodyWeightKg')}" th:errors="*{bodyWeightKg}"></div>
+                </div>
+
+                <div class="field">
+                    <label for="energyLevel">컨디션</label>
+                    <select id="energyLevel" th:field="*{energyLevel}">
+                        <option th:each="energyLevel : ${energyLevels}"
+                                th:value="${energyLevel}"
+                                th:text="${energyLevel.label}">
+                        </option>
+                    </select>
+                    <div class="field-error" th:if="${#fields.hasErrors('energyLevel')}" th:errors="*{energyLevel}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="memo">메모</label>
+                    <textarea id="memo" th:field="*{memo}" rows="4" placeholder="예: 피로감, 스트레스, 통증, 식욕, 특이사항"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('memo')}" th:errors="*{memo}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">컨디션 저장</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel section-gap" th:if="${condition != null}">
+        <div class="section-heading">
+            <h2 class="section-title">선택 날짜 기록</h2>
+            <span class="muted" th:text="${recordedOn}">2026-01-01</span>
+        </div>
+        <article class="record-item">
+            <div class="record-item__main">
+                <span class="pill" th:text="${condition.energyLevel() == null ? '미기록' : condition.energyLevel().label}">보통</span>
+                <h3>하루 컨디션</h3>
+                <p class="muted"
+                   th:text="|수면 ${condition.sleepMinutes() ?: 0}분 · 체중 ${condition.bodyWeightKg() ?: '-'}kg|">
+                    수면 0분
+                </p>
+                <p th:if="${condition.memo()}" th:text="${condition.memo()}">메모</p>
+            </div>
+            <div class="record-item__actions">
+                <form th:action="@{/conditions/delete(date=${recordedOn})}" method="post">
+                    <button class="button button--danger" type="submit">삭제</button>
+                </form>
+            </div>
+        </article>
+    </section>
+
+    <section class="panel section-gap" th:if="${condition == null}">
+        <div class="empty-state">
+            선택한 날짜의 컨디션 기록이 없습니다.
+        </div>
+    </section>
+</main>
+</body>
+</html>
