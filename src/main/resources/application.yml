@@ -6,3 +6,8 @@ spring:
 
 server:
   port: 8080
+
+openai:
+  base-url: https://api.openai.com/v1
+  model: gpt-5.5
+  api-key: ${OPENAI_API_KEY:}

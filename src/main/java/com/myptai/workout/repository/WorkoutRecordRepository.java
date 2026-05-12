@@ -10,5 +10,11 @@ public interface WorkoutRecordRepository extends JpaRepository<WorkoutRecord, Lo
 
     List<WorkoutRecord> findByUser_IdAndRecordedOnOrderByIdDesc(Long userId, LocalDate recordedOn);
 
+    List<WorkoutRecord> findByUser_IdAndRecordedOnBetweenOrderByRecordedOnDescIdDesc(
+            Long userId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
     Optional<WorkoutRecord> findByIdAndUser_Id(Long id, Long userId);
 }

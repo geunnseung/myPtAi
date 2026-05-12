@@ -15,7 +15,7 @@
             <a th:href="@{/meals}">식단</a>
             <a th:href="@{/workouts}" aria-current="page">운동</a>
             <a th:href="@{/conditions}">컨디션</a>
-            <a href="#" aria-disabled="true">AI 코칭</a>
+            <a th:href="@{/coach}">AI 코칭</a>
         </nav>
     </div>
 </header>
@@ -29,7 +29,7 @@
         <form class="date-filter" th:action="@{/workouts}" method="get">
             <label for="date">기록 날짜</label>
             <input id="date" name="date" type="date" th:value="${recordedOn}">
-            <button class="button button--secondary" type="submit">조회</button>
+            <button class="button button--secondary" type="submit">조&#8288;회</button>
         </form>
     </div>
 

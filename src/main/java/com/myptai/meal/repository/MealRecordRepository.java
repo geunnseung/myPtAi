@@ -10,5 +10,11 @@ public interface MealRecordRepository extends JpaRepository<MealRecord, Long> {
 
     List<MealRecord> findByUser_IdAndRecordedOnOrderByIdDesc(Long userId, LocalDate recordedOn);
 
+    List<MealRecord> findByUser_IdAndRecordedOnBetweenOrderByRecordedOnDescIdDesc(
+            Long userId,
+            LocalDate startDate,
+            LocalDate endDate
+    );
+
     Optional<MealRecord> findByIdAndUser_Id(Long id, Long userId);
 }

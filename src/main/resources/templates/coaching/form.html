@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AI 코칭 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}">프로필</a>
+            <a th:href="@{/meals}">식단</a>
+            <a th:href="@{/workouts}">운동</a>
+            <a th:href="@{/conditions}">컨디션</a>
+            <a th:href="@{/coach}" aria-current="page">AI 코칭</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>AI 코칭</h1>
+            <p>기록한 식단, 운동, 컨디션을 바탕으로 오늘의 실행 계획을 요청합니다.</p>
+        </div>
+        <form class="date-filter" th:action="@{/coach}" method="get">
+            <label for="date">기준 날짜</label>
+            <input id="date" name="date" type="date" th:value="${targetDate}">
+            <button class="button button--secondary" type="submit">조&#8288;회</button>
+        </form>
+    </div>
+
+    <div class="flash-message" th:if="${message}" th:text="${message}"></div>
+
+    <section class="panel">
+        <h2 class="section-title">코칭 요청</h2>
+        <form th:action="@{/coach}" th:object="${form}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="targetDate">기준 날짜</label>
+                    <input id="targetDate" name="targetDate" type="date"
+                           th:value="${form.targetDate == null ? '' : #temporals.format(form.targetDate, 'yyyy-MM-dd')}">
+                    <div class="field-error" th:if="${#fields.hasErrors('targetDate')}" th:errors="*{targetDate}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <label for="question">질문</label>
+                    <textarea id="question" th:field="*{question}" rows="5"
+                              placeholder="예: 오늘 저녁 식단과 내일 운동 루틴을 어떻게 가져가면 좋을까?"></textarea>
+                    <div class="field-error" th:if="${#fields.hasErrors('question')}" th:errors="*{question}"></div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="button" type="submit">AI 코칭 받기</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel section-gap" th:if="${selectedRequest != null}">
+        <div class="section-heading">
+            <h2 class="section-title">코칭 결과</h2>
+            <span class="status-badge"
+                  th:classappend="${selectedRequest.succeeded()} ? ' status-badge--success' : (${selectedRequest.failed()} ? ' status-badge--danger' : '')"
+                  th:text="${selectedRequest.status().label}">성공</span>
+        </div>
+        <p class="muted">
+            <span th:text="${selectedRequest.createdAt() == null ? '요청 시각 저장 중' : #temporals.format(selectedRequest.createdAt(), 'yyyy-MM-dd HH:mm')}">
+                2026-01-01 09:00
+            </span>
+            <span th:if="${selectedRequest.model()}"> · </span>
+            <span th:if="${selectedRequest.model()}" th:text="${selectedRequest.model()}">gpt-5.5</span>
+        </p>
+        <h3 class="result-question" th:text="${selectedRequest.question()}">질문</h3>
+        <div class="answer-box" th:if="${selectedRequest.answer()}" th:text="${selectedRequest.answer()}"></div>
+        <div class="empty-state" th:if="${selectedRequest.errorMessage()}" th:text="${selectedRequest.errorMessage()}"></div>
+    </section>
+
+    <section class="panel section-gap">
+        <div class="section-heading">
+            <h2 class="section-title">선택 날짜 요청</h2>
+            <span class="muted" th:text="${targetDate}">2026-01-01</span>
+        </div>
+        <div class="record-list" th:if="${!requests.isEmpty()}">
+            <article class="record-item" th:each="request : ${requests}">
+                <div class="record-item__main">
+                    <span class="pill" th:text="${request.status().label}">성공</span>
+                    <h3 th:text="${request.question()}">질문</h3>
+                    <p class="muted">
+                        <span th:text="${request.createdAt() == null ? '요청 시각 저장 중' : #temporals.format(request.createdAt(), 'yyyy-MM-dd HH:mm')}">
+                            2026-01-01 09:00
+                        </span>
+                        <span th:if="${request.model()}"> · </span>
+                        <span th:if="${request.model()}" th:text="${request.model()}">gpt-5.5</span>
+                    </p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary"
+                       th:href="@{/coach(date=${request.targetDate()}, requestId=${request.id()})}">보기</a>
+                </div>
+            </article>
+        </div>
+        <div class="empty-state" th:if="${requests.isEmpty()}">
+            선택한 날짜의 AI 코칭 요청이 없습니다.
+        </div>
+    </section>
+
+    <section class="panel section-gap" th:if="${!recentRequests.isEmpty()}">
+        <h2 class="section-title">최근 요청</h2>
+        <div class="record-list">
+            <article class="record-item" th:each="request : ${recentRequests}">
+                <div class="record-item__main">
+                    <span class="pill" th:text="${request.targetDate()}">2026-01-01</span>
+                    <h3 th:text="${request.question()}">질문</h3>
+                    <p class="muted" th:text="${request.status().label}">성공</p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary"
+                       th:href="@{/coach(date=${request.targetDate()}, requestId=${request.id()})}">보기</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>
