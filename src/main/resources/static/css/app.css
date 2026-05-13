@@ -66,8 +66,37 @@ a {
     color: var(--primary);
 }
 
+.nav-form {
+    margin: 0;
+}
+
+.nav-form button {
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 0;
+}
+
+.nav-form button:hover {
+    color: var(--primary);
+}
+
 .page {
     padding: 32px 0;
+}
+
+.auth-page {
+    width: min(520px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 56px 0;
+}
+
+.auth-panel {
+    padding: 28px;
 }
 
 .page-title {
@@ -122,6 +151,10 @@ a {
     gap: 18px;
 }
 
+.form-grid--single {
+    grid-template-columns: 1fr;
+}
+
 .field {
     display: grid;
     gap: 7px;
@@ -173,6 +206,10 @@ textarea:focus {
     margin-top: 22px;
 }
 
+.form-actions--between {
+    justify-content: space-between;
+}
+
 .button {
     display: inline-flex;
     align-items: center;
@@ -220,6 +257,22 @@ textarea:focus {
     font-weight: 800;
     margin-bottom: 16px;
     padding: 12px 14px;
+}
+
+.flash-message--danger {
+    border-color: rgba(181, 61, 61, 0.24);
+    background: #f4e7e7;
+    color: var(--danger);
+}
+
+.text-link {
+    color: var(--primary-dark);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.text-link:hover {
+    text-decoration: underline;
 }
 
 .date-filter {

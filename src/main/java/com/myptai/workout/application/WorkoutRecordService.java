@@ -1,7 +1,7 @@
 package com.myptai.workout.application;
 
+import com.myptai.user.application.CurrentUserService;
 import com.myptai.user.domain.AppUser;
-import com.myptai.user.repository.AppUserRepository;
 import com.myptai.workout.domain.WorkoutRecord;
 import com.myptai.workout.repository.WorkoutRecordRepository;
 import java.time.LocalDate;
@@ -13,16 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkoutRecordService {
 
     private final WorkoutRecordRepository workoutRecordRepository;
-    private final AppUserRepository appUserRepository;
+    private final CurrentUserService currentUserService;
 
-    public WorkoutRecordService(WorkoutRecordRepository workoutRecordRepository, AppUserRepository appUserRepository) {
+    public WorkoutRecordService(WorkoutRecordRepository workoutRecordRepository, CurrentUserService currentUserService) {
         this.workoutRecordRepository = workoutRecordRepository;
-        this.appUserRepository = appUserRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional(readOnly = true)
     public List<WorkoutRecordView> findByDate(LocalDate recordedOn) {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .map(user -> workoutRecordRepository.findByUser_IdAndRecordedOnOrderByIdDesc(user.getId(), recordedOn)
                         .stream()
                         .map(WorkoutRecordView::from)
@@ -65,7 +65,6 @@ public class WorkoutRecordService {
     }
 
     private AppUser getCurrentUser() {
-        return appUserRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(RequiredUserProfileException::new);
+        return currentUserService.getCurrentUser(RequiredUserProfileException::new);
     }
 }

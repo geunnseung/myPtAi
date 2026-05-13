@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css(v=login)}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/login}">My PT AI</a>
+        <nav class="nav" aria-label="인증 메뉴">
+            <a th:href="@{/login}" aria-current="page">로그인</a>
+            <a th:href="@{/signup}">회원가입</a>
+        </nav>
+    </div>
+</header>
+
+<main class="auth-page">
+    <section class="panel auth-panel">
+        <div class="page-title">
+            <h1>로그인</h1>
+            <p>식단, 운동, AI 코칭 기록을 이어서 관리합니다.</p>
+        </div>
+
+        <div class="flash-message" th:if="${registered}">회원가입이 완료되었습니다. 로그인해 주세요.</div>
+        <div class="flash-message" th:if="${loggedOut}">로그아웃되었습니다.</div>
+        <div class="flash-message flash-message--danger" th:if="${loginError}">
+            이메일 또는 비밀번호를 확인해 주세요.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-grid form-grid--single">
+                <div class="field">
+                    <label for="email">이메일</label>
+                    <input id="email" name="email" type="email" autocomplete="username" placeholder="you@example.com">
+                </div>
+
+                <div class="field">
+                    <label for="password">비밀번호</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password">
+                </div>
+            </div>
+
+            <div class="form-actions form-actions--between">
+                <button class="button" type="submit">로그인</button>
+                <a class="text-link" th:href="@{/signup}">회원가입</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

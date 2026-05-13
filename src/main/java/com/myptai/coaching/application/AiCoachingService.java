@@ -2,8 +2,8 @@ package com.myptai.coaching.application;
 
 import com.myptai.coaching.domain.AiCoachingRequest;
 import com.myptai.coaching.repository.AiCoachingRequestRepository;
+import com.myptai.user.application.CurrentUserService;
 import com.myptai.user.domain.AppUser;
-import com.myptai.user.repository.AppUserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -14,25 +14,25 @@ import org.springframework.transaction.annotation.Transactional;
 public class AiCoachingService {
 
     private final AiCoachingRequestRepository aiCoachingRequestRepository;
-    private final AppUserRepository appUserRepository;
+    private final CurrentUserService currentUserService;
     private final CoachingPromptBuilder coachingPromptBuilder;
     private final OpenAiClient openAiClient;
 
     public AiCoachingService(
             AiCoachingRequestRepository aiCoachingRequestRepository,
-            AppUserRepository appUserRepository,
+            CurrentUserService currentUserService,
             CoachingPromptBuilder coachingPromptBuilder,
             OpenAiClient openAiClient
     ) {
         this.aiCoachingRequestRepository = aiCoachingRequestRepository;
-        this.appUserRepository = appUserRepository;
+        this.currentUserService = currentUserService;
         this.coachingPromptBuilder = coachingPromptBuilder;
         this.openAiClient = openAiClient;
     }
 
     @Transactional(readOnly = true)
     public List<AiCoachingView> findByDate(LocalDate targetDate) {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .map(user -> aiCoachingRequestRepository.findByUser_IdAndTargetDateOrderByCreatedAtDesc(
                                 user.getId(),
                                 targetDate
@@ -45,7 +45,7 @@ public class AiCoachingService {
 
     @Transactional(readOnly = true)
     public List<AiCoachingView> findRecentRequests() {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .map(user -> aiCoachingRequestRepository.findTop10ByUser_IdOrderByCreatedAtDesc(user.getId())
                         .stream()
                         .map(AiCoachingView::from)
@@ -83,7 +83,6 @@ public class AiCoachingService {
     }
 
     private AppUser getCurrentUser() {
-        return appUserRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(RequiredUserProfileException::new);
+        return currentUserService.getCurrentUser(RequiredUserProfileException::new);
     }
 }

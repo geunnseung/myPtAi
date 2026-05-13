@@ -9,21 +9,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserProfileService {
 
+    private final CurrentUserService currentUserService;
     private final AppUserRepository appUserRepository;
 
-    public UserProfileService(AppUserRepository appUserRepository) {
+    public UserProfileService(CurrentUserService currentUserService, AppUserRepository appUserRepository) {
+        this.currentUserService = currentUserService;
         this.appUserRepository = appUserRepository;
     }
 
     @Transactional(readOnly = true)
     public Optional<UserProfileView> findCurrentProfile() {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .map(UserProfileView::from);
     }
 
     @Transactional
     public UserProfileView save(UserProfileCommand command) {
-        Optional<AppUser> existingUser = appUserRepository.findFirstByOrderByIdAsc();
+        Optional<AppUser> existingUser = currentUserService.findCurrentUser();
 
         AppUser user = existingUser.orElseGet(() -> AppUser.create(
                 command.displayName(),

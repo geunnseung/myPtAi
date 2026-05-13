@@ -2,8 +2,8 @@ package com.myptai.condition.application;
 
 import com.myptai.condition.domain.DailyCondition;
 import com.myptai.condition.repository.DailyConditionRepository;
+import com.myptai.user.application.CurrentUserService;
 import com.myptai.user.domain.AppUser;
-import com.myptai.user.repository.AppUserRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -13,19 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class DailyConditionService {
 
     private final DailyConditionRepository dailyConditionRepository;
-    private final AppUserRepository appUserRepository;
+    private final CurrentUserService currentUserService;
 
     public DailyConditionService(
             DailyConditionRepository dailyConditionRepository,
-            AppUserRepository appUserRepository
+            CurrentUserService currentUserService
     ) {
         this.dailyConditionRepository = dailyConditionRepository;
-        this.appUserRepository = appUserRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional(readOnly = true)
     public Optional<DailyConditionView> findByDate(LocalDate recordedOn) {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .flatMap(user -> dailyConditionRepository.findByUser_IdAndRecordedOn(user.getId(), recordedOn))
                 .map(DailyConditionView::from);
     }
@@ -55,7 +55,6 @@ public class DailyConditionService {
     }
 
     private AppUser getCurrentUser() {
-        return appUserRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(RequiredUserProfileException::new);
+        return currentUserService.getCurrentUser(RequiredUserProfileException::new);
     }
 }

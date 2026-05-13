@@ -2,8 +2,8 @@ package com.myptai.meal.application;
 
 import com.myptai.meal.domain.MealRecord;
 import com.myptai.meal.repository.MealRecordRepository;
+import com.myptai.user.application.CurrentUserService;
 import com.myptai.user.domain.AppUser;
-import com.myptai.user.repository.AppUserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -13,16 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class MealRecordService {
 
     private final MealRecordRepository mealRecordRepository;
-    private final AppUserRepository appUserRepository;
+    private final CurrentUserService currentUserService;
 
-    public MealRecordService(MealRecordRepository mealRecordRepository, AppUserRepository appUserRepository) {
+    public MealRecordService(MealRecordRepository mealRecordRepository, CurrentUserService currentUserService) {
         this.mealRecordRepository = mealRecordRepository;
-        this.appUserRepository = appUserRepository;
+        this.currentUserService = currentUserService;
     }
 
     @Transactional(readOnly = true)
     public List<MealRecordView> findByDate(LocalDate recordedOn) {
-        return appUserRepository.findFirstByOrderByIdAsc()
+        return currentUserService.findCurrentUser()
                 .map(user -> mealRecordRepository.findByUser_IdAndRecordedOnOrderByIdDesc(user.getId(), recordedOn)
                         .stream()
                         .map(MealRecordView::from)
@@ -65,7 +65,6 @@ public class MealRecordService {
     }
 
     private AppUser getCurrentUser() {
-        return appUserRepository.findFirstByOrderByIdAsc()
-                .orElseThrow(RequiredUserProfileException::new);
+        return currentUserService.getCurrentUser(RequiredUserProfileException::new);
     }
 }

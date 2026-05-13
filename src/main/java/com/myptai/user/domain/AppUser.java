@@ -19,6 +19,16 @@ public class AppUser extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "email", length = 255, unique = true)
+    private String email;
+
+    @Column(name = "password_hash", length = 100)
+    private String passwordHash;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 30)
+    private UserRole role;
+
     @Column(name = "display_name", nullable = false, length = 50)
     private String displayName;
 
@@ -46,6 +56,9 @@ public class AppUser extends BaseTimeEntity {
     }
 
     private AppUser(
+            String email,
+            String passwordHash,
+            UserRole role,
             String displayName,
             GoalType goal,
             Integer heightCm,
@@ -54,6 +67,9 @@ public class AppUser extends BaseTimeEntity {
             String foodPreference,
             String restrictions
     ) {
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.role = role;
         this.displayName = displayName;
         this.goal = goal;
         this.heightCm = heightCm;
@@ -72,7 +88,37 @@ public class AppUser extends BaseTimeEntity {
             String foodPreference,
             String restrictions
     ) {
-        return new AppUser(displayName, goal, heightCm, weightKg, activityLevel, foodPreference, restrictions);
+        return new AppUser(
+                null,
+                null,
+                UserRole.USER,
+                displayName,
+                goal,
+                heightCm,
+                weightKg,
+                activityLevel,
+                foodPreference,
+                restrictions
+        );
+    }
+
+    public static AppUser signup(String email, String passwordHash, String displayName, GoalType goal) {
+        return new AppUser(
+                email,
+                passwordHash,
+                UserRole.USER,
+                displayName,
+                goal,
+                null,
+                null,
+                ActivityLevel.MODERATE,
+                null,
+                null
+        );
+    }
+
+    public boolean hasLoginCredentials() {
+        return email != null && !email.isBlank() && passwordHash != null && !passwordHash.isBlank();
     }
 
     public void updateProfile(
@@ -95,6 +141,18 @@ public class AppUser extends BaseTimeEntity {
 
     public Long getId() {
         return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public UserRole getRole() {
+        return role;
     }
 
     public String getDisplayName() {
