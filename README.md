@@ -1,5 +1,7 @@
 # My PT AI
 
+[![CI](https://github.com/geunnseung/myPtAi/actions/workflows/ci.yml/badge.svg)](https://github.com/geunnseung/myPtAi/actions/workflows/ci.yml)
+
 식단과 운동 기록을 바탕으로 개인화된 AI 코칭을 제공하는 Spring Boot 웹앱입니다.
 
 ## 기술 스택
@@ -49,6 +51,10 @@ curl http://localhost:8080/actuator/health
 ```
 
 현재 프로젝트는 실무 커밋 단위로 작게 쌓아갑니다.
+
+## CI
+
+GitHub Actions에서 `main`, `codex/**` 브랜치 푸쉬와 `main` 대상 PR마다 테스트를 실행합니다.
 
 ## 문서
 
