@@ -22,6 +22,32 @@
 ./gradlew bootRun
 ```
 
+## Docker 실행
+
+이미지 빌드:
+
+```bash
+docker build -t my-pt-ai .
+```
+
+운영 프로필 실행:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e MYSQL_URL=jdbc:mysql://host.docker.internal:3306/myptai \
+  -e MYSQL_USERNAME=myptai \
+  -e MYSQL_PASSWORD=change-me \
+  -e OPENAI_API_KEY=your-openai-api-key \
+  my-pt-ai
+```
+
+헬스체크:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
 현재 프로젝트는 실무 커밋 단위로 작게 쌓아갑니다.
 
 ## 문서
