@@ -26,28 +26,37 @@
 
 ## Docker 실행
 
-이미지 빌드:
+로컬에서 MySQL까지 함께 실행:
 
 ```bash
-docker build -t my-pt-ai .
+cp .env.example .env
+docker compose up --build
 ```
 
-운영 프로필 실행:
-
-```bash
-docker run --rm -p 8080:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
-  -e MYSQL_URL=jdbc:mysql://host.docker.internal:3306/myptai \
-  -e MYSQL_USERNAME=myptai \
-  -e MYSQL_PASSWORD=change-me \
-  -e OPENAI_API_KEY=your-openai-api-key \
-  my-pt-ai
-```
+`.env` 파일에서 MySQL 비밀번호와 `OPENAI_API_KEY` 값을 로컬 환경에 맞게 변경한 뒤 실행합니다.
 
 헬스체크:
 
 ```bash
 curl http://localhost:8080/actuator/health
+```
+
+종료:
+
+```bash
+docker compose down
+```
+
+MySQL 데이터까지 삭제:
+
+```bash
+docker compose down -v
+```
+
+이미지만 빌드:
+
+```bash
+docker build -t my-pt-ai .
 ```
 
 현재 프로젝트는 실무 커밋 단위로 작게 쌓아갑니다.
