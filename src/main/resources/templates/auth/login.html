@@ -1,21 +1,8 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>로그인 | My PT AI</title>
-    <link rel="stylesheet" th:href="@{/css/app.css(v=login)}">
-</head>
+<head th:replace="~{fragments/layout :: head('로그인 | My PT AI')}"></head>
 <body>
-<header class="app-header">
-    <div class="app-header__inner">
-        <a class="brand" th:href="@{/login}">My PT AI</a>
-        <nav class="nav" aria-label="인증 메뉴">
-            <a th:href="@{/login}" aria-current="page">로그인</a>
-            <a th:href="@{/signup}">회원가입</a>
-        </nav>
-    </div>
-</header>
+<header th:replace="~{fragments/layout :: authHeader('login')}"></header>
 
 <main class="auth-page">
     <section class="panel auth-panel">

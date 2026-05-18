@@ -1,27 +1,8 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>프로필 | My PT AI</title>
-    <link rel="stylesheet" th:href="@{/css/app.css(v=login)}">
-</head>
+<head th:replace="~{fragments/layout :: head('프로필 | My PT AI')}"></head>
 <body>
-<header class="app-header">
-    <div class="app-header__inner">
-        <a class="brand" th:href="@{/}">My PT AI</a>
-        <nav class="nav" aria-label="주요 메뉴">
-            <a th:href="@{/profile}" aria-current="page">프로필</a>
-            <a th:href="@{/meals}">식단</a>
-            <a th:href="@{/workouts}">운동</a>
-            <a th:href="@{/conditions}">컨디션</a>
-            <a th:href="@{/coach}">AI 코칭</a>
-            <form class="nav-form" th:action="@{/logout}" method="post">
-                <button type="submit">로그아웃</button>
-            </form>
-        </nav>
-    </div>
-</header>
+<header th:replace="~{fragments/layout :: appHeader('profile')}"></header>
 
 <main class="page">
     <div class="page-title">

@@ -1,17 +1,8 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>오류 | My PT AI</title>
-    <link rel="stylesheet" th:href="@{/css/app.css(v=error)}">
-</head>
+<head th:replace="~{fragments/layout :: head('오류 | My PT AI')}"></head>
 <body>
-<header class="app-header">
-    <div class="app-header__inner">
-        <a class="brand" th:href="@{/}">My PT AI</a>
-    </div>
-</header>
+<header th:replace="~{fragments/layout :: simpleHeader}"></header>
 
 <main class="error-page">
     <section class="panel error-panel">

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle}">My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css(v=layout)}">
+</head>
+<body>
+<header class="app-header" th:fragment="authHeader(activeMenu)">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/login}">My PT AI</a>
+        <nav class="nav" aria-label="인증 메뉴">
+            <a th:href="@{/login}"
+               th:attr="aria-current=${activeMenu == 'login' ? 'page' : null}">로그인</a>
+            <a th:href="@{/signup}"
+               th:attr="aria-current=${activeMenu == 'signup' ? 'page' : null}">회원가입</a>
+        </nav>
+    </div>
+</header>
+
+<header class="app-header" th:fragment="appHeader(activeMenu)">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+        <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/profile}"
+               th:attr="aria-current=${activeMenu == 'profile' ? 'page' : null}">프로필</a>
+            <a th:href="@{/meals}"
+               th:attr="aria-current=${activeMenu == 'meals' ? 'page' : null}">식단</a>
+            <a th:href="@{/workouts}"
+               th:attr="aria-current=${activeMenu == 'workouts' ? 'page' : null}">운동</a>
+            <a th:href="@{/conditions}"
+               th:attr="aria-current=${activeMenu == 'conditions' ? 'page' : null}">컨디션</a>
+            <a th:href="@{/coach}"
+               th:attr="aria-current=${activeMenu == 'coach' ? 'page' : null}">AI 코칭</a>
+            <form class="nav-form" th:action="@{/logout}" method="post">
+                <button type="submit">로그아웃</button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<header class="app-header" th:fragment="simpleHeader">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+    </div>
+</header>
+</body>
+</html>
