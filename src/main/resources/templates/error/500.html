@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>서버 오류 | My PT AI</title>
+    <link rel="stylesheet" th:href="@{/css/app.css(v=error)}">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-header__inner">
+        <a class="brand" th:href="@{/}">My PT AI</a>
+    </div>
+</header>
+
+<main class="error-page">
+    <section class="panel error-panel">
+        <p class="error-code">500</p>
+        <div class="page-title">
+            <h1>요청을 처리하지 못했습니다.</h1>
+            <p>잠시 후 다시 시도해 주세요.</p>
+        </div>
+        <div class="form-actions">
+            <a class="button" th:href="@{/}">홈으로 이동</a>
+            <a class="button button--secondary" th:href="@{/login}">로그인</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>

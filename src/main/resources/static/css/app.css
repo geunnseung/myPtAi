@@ -403,6 +403,24 @@ textarea:focus {
     color: var(--muted);
 }
 
+.error-page {
+    width: min(640px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 72px 0;
+}
+
+.error-panel {
+    padding: 32px;
+}
+
+.error-code {
+    color: var(--primary);
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    margin: 0 0 12px;
+}
+
 @media (max-width: 720px) {
     .app-header__inner {
         align-items: flex-start;
