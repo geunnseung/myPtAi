@@ -23,6 +23,8 @@
     <div class="app-header__inner">
         <a class="brand" th:href="@{/}">My PT AI</a>
         <nav class="nav" aria-label="주요 메뉴">
+            <a th:href="@{/}"
+               th:attr="aria-current=${activeMenu == 'home' ? 'page' : null}">홈</a>
             <a th:href="@{/profile}"
                th:attr="aria-current=${activeMenu == 'profile' ? 'page' : null}">프로필</a>
             <a th:href="@{/meals}"

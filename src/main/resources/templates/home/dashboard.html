@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('홈 | My PT AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: appHeader('home')}"></header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>오늘 대시보드</h1>
+            <p>오늘 기록 상태를 확인하고 다음 입력으로 바로 이동합니다.</p>
+        </div>
+        <span class="pill" th:text="${today}">2026-01-01</span>
+    </div>
+
+    <section class="summary-grid" aria-label="오늘 요약">
+        <article class="summary-card">
+            <span>식단 기록</span>
+            <strong th:text="${mealCount} + '개'">0개</strong>
+        </article>
+        <article class="summary-card">
+            <span>총 칼로리</span>
+            <strong th:text="${mealSummary.totalCalories()} + ' kcal'">0 kcal</strong>
+        </article>
+        <article class="summary-card">
+            <span>운동 시간</span>
+            <strong th:text="${workoutSummary.totalDurationMinutes()} + '분'">0분</strong>
+        </article>
+        <article class="summary-card">
+            <span>컨디션</span>
+            <strong th:text="${condition == null || condition.energyLevel() == null ? '-' : condition.energyLevel().label}">-</strong>
+        </article>
+    </section>
+
+    <section class="panel section-gap">
+        <h2 class="section-title">오늘 기록</h2>
+        <div class="record-list">
+            <article class="record-item">
+                <div class="record-item__main">
+                    <span class="pill">식단</span>
+                    <h3>오늘 먹은 음식 기록</h3>
+                    <p class="muted"
+                       th:text="|단백질 ${mealSummary.totalProteinG()}g · 탄수화물 ${mealSummary.totalCarbsG()}g · 지방 ${mealSummary.totalFatG()}g|">
+                        단백질 0g
+                    </p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary" th:href="@{/meals(date=${today})}">식단으로 이동</a>
+                </div>
+            </article>
+
+            <article class="record-item">
+                <div class="record-item__main">
+                    <span class="pill">운동</span>
+                    <h3>오늘 운동 루틴 기록</h3>
+                    <p class="muted"
+                       th:text="|기록 ${workoutSummary.recordCount()}개 · 고강도 ${workoutSummary.hardWorkoutCount()}개|">
+                        기록 0개
+                    </p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary" th:href="@{/workouts(date=${today})}">운동으로 이동</a>
+                </div>
+            </article>
+
+            <article class="record-item">
+                <div class="record-item__main">
+                    <span class="pill">컨디션</span>
+                    <h3>수면, 체중, 하루 컨디션</h3>
+                    <p class="muted"
+                       th:text="${condition == null ? '아직 컨디션 기록이 없습니다.' : '수면 ' + (condition.sleepMinutes() ?: 0) + '분 · 체중 ' + (condition.bodyWeightKg() ?: '-') + 'kg'}">
+                        아직 컨디션 기록이 없습니다.
+                    </p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary" th:href="@{/conditions(date=${today})}">컨디션으로 이동</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="panel section-gap">
+        <div class="section-heading">
+            <h2 class="section-title">AI 코칭</h2>
+            <a class="text-link" th:href="@{/coach(date=${today})}">새 코칭 요청</a>
+        </div>
+        <div class="empty-state" th:if="${recentCoaching.isEmpty()}">
+            아직 AI 코칭 요청이 없습니다.
+        </div>
+        <div class="record-list" th:unless="${recentCoaching.isEmpty()}">
+            <article class="record-item" th:each="request : ${recentCoaching}">
+                <div class="record-item__main">
+                    <span class="pill" th:text="${request.targetDate()}">2026-01-01</span>
+                    <h3 th:text="${request.question()}">질문</h3>
+                    <p class="muted" th:text="${request.status().label}">성공</p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary"
+                       th:href="@{/coach(date=${request.targetDate()}, requestId=${request.id()})}">보기</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>

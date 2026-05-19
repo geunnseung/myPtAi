@@ -59,6 +59,7 @@ class AppPageRenderingTest {
 
     private static Stream<Arguments> appPages() {
         return Stream.of(
+                arguments("/", "홈 | My PT AI", "홈"),
                 arguments("/profile", "프로필 | My PT AI", "프로필"),
                 arguments("/meals", "식단 기록 | My PT AI", "식단"),
                 arguments("/workouts", "운동 기록 | My PT AI", "운동"),
