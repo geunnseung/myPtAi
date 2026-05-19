@@ -64,7 +64,8 @@ class AppPageRenderingTest {
                 arguments("/meals", "식단 기록 | My PT AI", "식단"),
                 arguments("/workouts", "운동 기록 | My PT AI", "운동"),
                 arguments("/conditions", "컨디션 기록 | My PT AI", "컨디션"),
-                arguments("/coach", "AI 코칭 | My PT AI", "AI 코칭")
+                arguments("/coach", "AI 코칭 | My PT AI", "AI 코칭"),
+                arguments("/coach/history", "AI 코칭 이력 | My PT AI", "AI 코칭")
         );
     }
 }

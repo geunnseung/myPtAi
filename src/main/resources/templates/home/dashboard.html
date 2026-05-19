@@ -82,7 +82,10 @@
     <section class="panel section-gap">
         <div class="section-heading">
             <h2 class="section-title">AI 코칭</h2>
-            <a class="text-link" th:href="@{/coach(date=${today})}">새 코칭 요청</a>
+            <div class="record-item__actions">
+                <a class="text-link" th:href="@{/coach/history}">전체 이력</a>
+                <a class="text-link" th:href="@{/coach(date=${today})}">새 코칭 요청</a>
+            </div>
         </div>
         <div class="empty-state" th:if="${recentCoaching.isEmpty()}">
             아직 AI 코칭 요청이 없습니다.

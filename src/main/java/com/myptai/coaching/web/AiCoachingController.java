@@ -78,6 +78,17 @@ public class AiCoachingController {
         return "redirect:/coach?date=" + coaching.targetDate() + "&requestId=" + coaching.id();
     }
 
+    @GetMapping("/history")
+    public String coachingHistory(Model model, RedirectAttributes redirectAttributes) {
+        if (userProfileService.findCurrentProfile().isEmpty()) {
+            redirectAttributes.addFlashAttribute("message", "AI 코칭 이력을 보려면 프로필을 먼저 등록해 주세요.");
+            return "redirect:/profile";
+        }
+
+        model.addAttribute("historyRequests", aiCoachingService.findHistoryRequests());
+        return "coaching/history";
+    }
+
     @ExceptionHandler(RequiredUserProfileException.class)
     public String handleRequiredUserProfile(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("message", "AI 코칭을 사용하려면 프로필을 먼저 등록해 주세요.");

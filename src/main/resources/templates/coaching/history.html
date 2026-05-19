@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('AI 코칭 이력 | My PT AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: appHeader('coach')}"></header>
+
+<main class="page">
+    <div class="page-title page-title--with-action">
+        <div>
+            <h1>AI 코칭 이력</h1>
+            <p>최근 AI 코칭 요청과 답변 상태를 한 곳에서 확인합니다.</p>
+        </div>
+        <a class="button button--secondary" th:href="@{/coach}">새 코칭 요청</a>
+    </div>
+
+    <section class="panel">
+        <div class="empty-state" th:if="${historyRequests.isEmpty()}">
+            아직 AI 코칭 요청이 없습니다.
+        </div>
+
+        <div class="record-list" th:unless="${historyRequests.isEmpty()}">
+            <article class="record-item" th:each="request : ${historyRequests}">
+                <div class="record-item__main">
+                    <span class="status-badge"
+                          th:classappend="${request.succeeded()} ? ' status-badge--success' : (${request.failed()} ? ' status-badge--danger' : '')"
+                          th:text="${request.status().label}">성공</span>
+                    <h3 th:text="${request.question()}">질문</h3>
+                    <p class="muted">
+                        <span th:text="${request.targetDate()}">2026-01-01</span>
+                        <span> · </span>
+                        <span th:text="${request.createdAt() == null ? '요청 시각 저장 중' : #temporals.format(request.createdAt(), 'yyyy-MM-dd HH:mm')}">
+                            2026-01-01 09:00
+                        </span>
+                        <span th:if="${request.model()}"> · </span>
+                        <span th:if="${request.model()}" th:text="${request.model()}">gpt-5.5</span>
+                    </p>
+                </div>
+                <div class="record-item__actions">
+                    <a class="button button--secondary"
+                       th:href="@{/coach(date=${request.targetDate()}, requestId=${request.id()})}">보기</a>
+                </div>
+            </article>
+        </div>
+    </section>
+</main>
+</body>
+</html>

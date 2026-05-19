@@ -21,6 +21,7 @@ import com.myptai.workout.domain.WorkoutIntensity;
 import com.myptai.workout.domain.WorkoutType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,6 +110,23 @@ class AiCoachingServiceTest {
         assertThat(coaching.answer()).isNull();
         assertThat(coaching.errorMessage()).isEqualTo("OPENAI_API_KEY가 설정되지 않았습니다.");
         assertThat(aiCoachingRequestRepository.findById(coaching.id())).isPresent();
+    }
+
+    @Test
+    void AI_코칭_이력은_최근_30개만_조회한다() {
+        createProfile();
+
+        for (int index = 0; index < 31; index++) {
+            aiCoachingService.request(new AiCoachingCommand(
+                    LocalDate.of(2026, 6, 1).plusDays(index),
+                    "코칭 요청 " + index
+            ));
+        }
+
+        List<AiCoachingView> historyRequests = aiCoachingService.findHistoryRequests();
+
+        assertThat(historyRequests).hasSize(30);
+        assertThat(aiCoachingRequestRepository.count()).isEqualTo(31);
     }
 
     private void createProfile() {

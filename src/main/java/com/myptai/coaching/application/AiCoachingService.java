@@ -7,11 +7,14 @@ import com.myptai.user.domain.AppUser;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AiCoachingService {
+
+    private static final int HISTORY_LIMIT = 30;
 
     private final AiCoachingRequestRepository aiCoachingRequestRepository;
     private final CurrentUserService currentUserService;
@@ -47,6 +50,19 @@ public class AiCoachingService {
     public List<AiCoachingView> findRecentRequests() {
         return currentUserService.findCurrentUser()
                 .map(user -> aiCoachingRequestRepository.findTop10ByUser_IdOrderByCreatedAtDesc(user.getId())
+                        .stream()
+                        .map(AiCoachingView::from)
+                        .toList())
+                .orElseGet(List::of);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AiCoachingView> findHistoryRequests() {
+        return currentUserService.findCurrentUser()
+                .map(user -> aiCoachingRequestRepository.findByUser_IdOrderByCreatedAtDesc(
+                                user.getId(),
+                                PageRequest.of(0, HISTORY_LIMIT)
+                        )
                         .stream()
                         .map(AiCoachingView::from)
                         .toList())
