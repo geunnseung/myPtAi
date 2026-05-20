@@ -18,17 +18,20 @@ public class AiCoachingService {
 
     private final AiCoachingRequestRepository aiCoachingRequestRepository;
     private final CurrentUserService currentUserService;
+    private final CoachingContextReader coachingContextReader;
     private final CoachingPromptBuilder coachingPromptBuilder;
     private final OpenAiClient openAiClient;
 
     public AiCoachingService(
             AiCoachingRequestRepository aiCoachingRequestRepository,
             CurrentUserService currentUserService,
+            CoachingContextReader coachingContextReader,
             CoachingPromptBuilder coachingPromptBuilder,
             OpenAiClient openAiClient
     ) {
         this.aiCoachingRequestRepository = aiCoachingRequestRepository;
         this.currentUserService = currentUserService;
+        this.coachingContextReader = coachingContextReader;
         this.coachingPromptBuilder = coachingPromptBuilder;
         this.openAiClient = openAiClient;
     }
@@ -74,6 +77,12 @@ public class AiCoachingService {
         AppUser user = getCurrentUser();
         return aiCoachingRequestRepository.findByIdAndUser_Id(requestId, user.getId())
                 .map(AiCoachingView::from);
+    }
+
+    @Transactional(readOnly = true)
+    public AiCoachingContextView previewContext(LocalDate targetDate) {
+        AppUser user = getCurrentUser();
+        return AiCoachingContextView.from(coachingContextReader.read(user, targetDate));
     }
 
     @Transactional

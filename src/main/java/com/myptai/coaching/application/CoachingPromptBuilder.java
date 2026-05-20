@@ -1,63 +1,32 @@
 package com.myptai.coaching.application;
 
 import com.myptai.condition.domain.DailyCondition;
-import com.myptai.condition.repository.DailyConditionRepository;
 import com.myptai.meal.domain.MealRecord;
-import com.myptai.meal.repository.MealRecordRepository;
 import com.myptai.user.domain.AppUser;
 import com.myptai.workout.domain.WorkoutRecord;
-import com.myptai.workout.repository.WorkoutRecordRepository;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CoachingPromptBuilder {
 
-    private static final int CONTEXT_DAYS = 7;
+    private final CoachingContextReader coachingContextReader;
 
-    private final MealRecordRepository mealRecordRepository;
-    private final WorkoutRecordRepository workoutRecordRepository;
-    private final DailyConditionRepository dailyConditionRepository;
-
-    public CoachingPromptBuilder(
-            MealRecordRepository mealRecordRepository,
-            WorkoutRecordRepository workoutRecordRepository,
-            DailyConditionRepository dailyConditionRepository
-    ) {
-        this.mealRecordRepository = mealRecordRepository;
-        this.workoutRecordRepository = workoutRecordRepository;
-        this.dailyConditionRepository = dailyConditionRepository;
+    public CoachingPromptBuilder(CoachingContextReader coachingContextReader) {
+        this.coachingContextReader = coachingContextReader;
     }
 
     public String build(AppUser user, AiCoachingCommand command) {
-        LocalDate startDate = command.targetDate().minusDays(CONTEXT_DAYS - 1L);
-        List<MealRecord> meals = mealRecordRepository.findByUser_IdAndRecordedOnBetweenOrderByRecordedOnDescIdDesc(
-                user.getId(),
-                startDate,
-                command.targetDate()
-        );
-        List<WorkoutRecord> workouts =
-                workoutRecordRepository.findByUser_IdAndRecordedOnBetweenOrderByRecordedOnDescIdDesc(
-                        user.getId(),
-                        startDate,
-                        command.targetDate()
-                );
-        List<DailyCondition> conditions =
-                dailyConditionRepository.findByUser_IdAndRecordedOnBetweenOrderByRecordedOnDesc(
-                        user.getId(),
-                        startDate,
-                        command.targetDate()
-                );
+        CoachingContext context = coachingContextReader.read(user, command.targetDate());
 
         StringBuilder prompt = new StringBuilder();
         appendProfile(prompt, user);
         prompt.append("\n[요청]\n")
                 .append("- 기준 날짜: ").append(command.targetDate()).append('\n')
                 .append("- 사용자 질문: ").append(command.question()).append('\n');
-        appendMeals(prompt, meals);
-        appendWorkouts(prompt, workouts);
-        appendConditions(prompt, conditions);
+        appendMeals(prompt, context.meals());
+        appendWorkouts(prompt, context.workouts());
+        appendConditions(prompt, context.conditions());
         prompt.append("""
 
                 [답변 형식]

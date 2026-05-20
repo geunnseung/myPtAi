@@ -129,6 +129,24 @@ class AiCoachingServiceTest {
         assertThat(aiCoachingRequestRepository.count()).isEqualTo(31);
     }
 
+    @Test
+    void AI_코칭_맥락_미리보기는_최근_7일_기록만_집계한다() {
+        createProfile();
+        LocalDate targetDate = LocalDate.of(2026, 6, 22);
+        mealRecordService.create(mealCommand(targetDate));
+        mealRecordService.create(mealCommand(targetDate.minusDays(7)));
+        workoutRecordService.create(workoutCommand(targetDate.minusDays(6)));
+        dailyConditionService.save(conditionCommand(targetDate));
+
+        AiCoachingContextView contextPreview = aiCoachingService.previewContext(targetDate);
+
+        assertThat(contextPreview.startDate()).isEqualTo(LocalDate.of(2026, 6, 16));
+        assertThat(contextPreview.endDate()).isEqualTo(targetDate);
+        assertThat(contextPreview.mealCount()).isEqualTo(1);
+        assertThat(contextPreview.workoutCount()).isEqualTo(1);
+        assertThat(contextPreview.conditionCount()).isEqualTo(1);
+    }
+
     private void createProfile() {
         userProfileService.save(new UserProfileCommand(
                 "민수",

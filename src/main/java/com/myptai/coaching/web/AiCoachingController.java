@@ -110,6 +110,7 @@ public class AiCoachingController {
             AiCoachingView selectedRequest
     ) {
         model.addAttribute("targetDate", targetDate);
+        model.addAttribute("contextPreview", aiCoachingService.previewContext(targetDate));
         model.addAttribute("requests", requests);
         model.addAttribute("selectedRequest", selectedRequest);
         model.addAttribute("recentRequests", aiCoachingService.findRecentRequests());

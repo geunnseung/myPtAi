@@ -19,7 +19,26 @@
 
     <div class="flash-message" th:if="${message}" th:text="${message}"></div>
 
-    <section class="panel">
+    <section class="summary-grid" aria-label="AI 코칭 참고 기록">
+        <article class="summary-card">
+            <span>참고 기간</span>
+            <strong th:text="|${contextPreview.startDate()} ~ ${contextPreview.endDate()}|">2026-01-01 ~ 2026-01-07</strong>
+        </article>
+        <article class="summary-card">
+            <span>식단 기록</span>
+            <strong th:text="${contextPreview.mealCount()} + '개'">0개</strong>
+        </article>
+        <article class="summary-card">
+            <span>운동 기록</span>
+            <strong th:text="${contextPreview.workoutCount()} + '개'">0개</strong>
+        </article>
+        <article class="summary-card">
+            <span>컨디션 기록</span>
+            <strong th:text="${contextPreview.conditionCount()} + '개'">0개</strong>
+        </article>
+    </section>
+
+    <section class="panel section-gap">
         <h2 class="section-title">코칭 요청</h2>
         <form th:action="@{/coach}" th:object="${form}" method="post" novalidate>
             <div class="form-grid">
