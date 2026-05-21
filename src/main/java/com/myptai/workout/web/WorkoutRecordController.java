@@ -91,6 +91,13 @@ public class WorkoutRecordController {
         return "workout/form";
     }
 
+    @GetMapping("/{workoutRecordId}/delete")
+    public String deleteConfirm(@PathVariable Long workoutRecordId, Model model) {
+        WorkoutRecordView workoutRecord = workoutRecordService.getForEdit(workoutRecordId);
+        model.addAttribute("workoutRecord", workoutRecord);
+        return "workout/delete";
+    }
+
     @PostMapping("/{workoutRecordId}")
     public String update(
             @PathVariable Long workoutRecordId,

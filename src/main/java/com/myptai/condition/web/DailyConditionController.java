@@ -93,6 +93,17 @@ public class DailyConditionController {
         return "redirect:/conditions?date=" + date;
     }
 
+    @GetMapping("/delete")
+    public String deleteConfirm(
+            @RequestParam(name = "date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            Model model
+    ) {
+        model.addAttribute("condition", dailyConditionService.findByDate(date)
+                .orElseThrow(() -> new DailyConditionNotFoundException(date)));
+        return "condition/delete";
+    }
+
     @ExceptionHandler(RequiredUserProfileException.class)
     public String handleRequiredUserProfile(RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("message", "컨디션 기록을 사용하려면 프로필을 먼저 등록해 주세요.");

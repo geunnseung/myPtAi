@@ -125,9 +125,7 @@
                 </div>
                 <div class="record-item__actions">
                     <a class="button button--secondary" th:href="@{/meals/{id}/edit(id=${meal.id()})}">수정</a>
-                    <form th:action="@{/meals/{id}/delete(id=${meal.id()}, date=${recordedOn})}" method="post">
-                        <button class="button button--danger" type="submit">삭제</button>
-                    </form>
+                    <a class="button button--danger" th:href="@{/meals/{id}/delete(id=${meal.id()})}">삭제</a>
                 </div>
             </article>
         </div>

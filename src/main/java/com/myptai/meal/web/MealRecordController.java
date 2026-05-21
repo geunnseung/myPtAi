@@ -85,6 +85,13 @@ public class MealRecordController {
         return "meal/form";
     }
 
+    @GetMapping("/{mealRecordId}/delete")
+    public String deleteConfirm(@PathVariable Long mealRecordId, Model model) {
+        MealRecordView mealRecord = mealRecordService.getForEdit(mealRecordId);
+        model.addAttribute("mealRecord", mealRecord);
+        return "meal/delete";
+    }
+
     @PostMapping("/{mealRecordId}")
     public String update(
             @PathVariable Long mealRecordId,

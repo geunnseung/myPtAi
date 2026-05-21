@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('식단 삭제 | My PT AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: appHeader('meals')}"></header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>식단 삭제</h1>
+        <p>삭제한 식단 기록은 되돌릴 수 없습니다.</p>
+    </div>
+
+    <section class="panel">
+        <article class="record-item">
+            <div class="record-item__main">
+                <span class="pill" th:text="${mealRecord.mealType().label}">아침</span>
+                <h3 th:text="${mealRecord.name()}">식단 기록</h3>
+                <p class="muted"
+                   th:text="|${mealRecord.recordedOn()} · ${mealRecord.calories() ?: 0} kcal · 단백질 ${mealRecord.proteinG() ?: 0}g|">
+                    2026-01-01
+                </p>
+                <p th:if="${mealRecord.memo()}" th:text="${mealRecord.memo()}">메모</p>
+            </div>
+        </article>
+
+        <form class="form-actions"
+              th:action="@{/meals/{id}/delete(id=${mealRecord.id()}, date=${mealRecord.recordedOn()})}"
+              method="post">
+            <button class="button button--danger" type="submit">삭제 확정</button>
+            <a class="button button--secondary" th:href="@{/meals(date=${mealRecord.recordedOn()})}">취소</a>
+        </form>
+    </section>
+</main>
+</body>
+</html>

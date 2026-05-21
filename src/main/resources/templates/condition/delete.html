@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('컨디션 삭제 | My PT AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: appHeader('conditions')}"></header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>컨디션 삭제</h1>
+        <p>삭제한 컨디션 기록은 되돌릴 수 없습니다.</p>
+    </div>
+
+    <section class="panel">
+        <article class="record-item">
+            <div class="record-item__main">
+                <span class="pill" th:text="${condition.energyLevel() == null ? '미기록' : condition.energyLevel().label}">보통</span>
+                <h3>하루 컨디션</h3>
+                <p class="muted"
+                   th:text="|${condition.recordedOn()} · 수면 ${condition.sleepMinutes() ?: 0}분 · 체중 ${condition.bodyWeightKg() ?: '-'}kg|">
+                    수면 0분
+                </p>
+                <p th:if="${condition.memo()}" th:text="${condition.memo()}">메모</p>
+            </div>
+        </article>
+
+        <form class="form-actions" th:action="@{/conditions/delete(date=${condition.recordedOn()})}" method="post">
+            <button class="button button--danger" type="submit">삭제 확정</button>
+            <a class="button button--secondary" th:href="@{/conditions(date=${condition.recordedOn()})}">취소</a>
+        </form>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('운동 삭제 | My PT AI')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: appHeader('workouts')}"></header>
+
+<main class="page">
+    <div class="page-title">
+        <h1>운동 삭제</h1>
+        <p>삭제한 운동 기록은 되돌릴 수 없습니다.</p>
+    </div>
+
+    <section class="panel">
+        <article class="record-item">
+            <div class="record-item__main">
+                <span class="pill" th:text="${workoutRecord.workoutType().label}">웨이트</span>
+                <h3 th:text="${workoutRecord.title()}">운동 기록</h3>
+                <p class="muted"
+                   th:text="|${workoutRecord.recordedOn()} · ${workoutRecord.durationMinutes() ?: 0}분 · 강도 ${workoutRecord.intensity() == null ? '-' : workoutRecord.intensity().label}|">
+                    2026-01-01
+                </p>
+                <p th:if="${workoutRecord.memo()}" th:text="${workoutRecord.memo()}">메모</p>
+            </div>
+        </article>
+
+        <form class="form-actions"
+              th:action="@{/workouts/{id}/delete(id=${workoutRecord.id()}, date=${workoutRecord.recordedOn()})}"
+              method="post">
+            <button class="button button--danger" type="submit">삭제 확정</button>
+            <a class="button button--secondary" th:href="@{/workouts(date=${workoutRecord.recordedOn()})}">취소</a>
+        </form>
+    </section>
+</main>
+</body>
+</html>
