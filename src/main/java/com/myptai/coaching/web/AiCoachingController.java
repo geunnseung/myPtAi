@@ -110,6 +110,7 @@ public class AiCoachingController {
             AiCoachingView selectedRequest
     ) {
         model.addAttribute("targetDate", targetDate);
+        addDateNavigationAttributes(model, targetDate);
         model.addAttribute("contextPreview", aiCoachingService.previewContext(targetDate));
         model.addAttribute("requests", requests);
         model.addAttribute("selectedRequest", selectedRequest);
@@ -118,5 +119,11 @@ public class AiCoachingController {
 
     private LocalDate defaultDate(LocalDate date) {
         return date == null ? LocalDate.now() : date;
+    }
+
+    private void addDateNavigationAttributes(Model model, LocalDate date) {
+        model.addAttribute("previousDate", date.minusDays(1));
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("nextDate", date.plusDays(1));
     }
 }

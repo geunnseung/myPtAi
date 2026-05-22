@@ -59,6 +59,7 @@ public class DailyConditionController {
             model.addAttribute("form", form);
         }
         model.addAttribute("recordedOn", recordedOn);
+        addDateNavigationAttributes(model, recordedOn);
         model.addAttribute("condition", dailyConditionService.findByDate(recordedOn).orElse(null));
         return "condition/form";
     }
@@ -73,6 +74,7 @@ public class DailyConditionController {
         if (bindingResult.hasErrors()) {
             LocalDate recordedOn = defaultDate(form.getRecordedOn());
             model.addAttribute("recordedOn", recordedOn);
+            addDateNavigationAttributes(model, recordedOn);
             model.addAttribute("condition", dailyConditionService.findByDate(recordedOn).orElse(null));
             return "condition/form";
         }
@@ -118,5 +120,11 @@ public class DailyConditionController {
 
     private LocalDate defaultDate(LocalDate date) {
         return date == null ? LocalDate.now() : date;
+    }
+
+    private void addDateNavigationAttributes(Model model, LocalDate date) {
+        model.addAttribute("previousDate", date.minusDays(1));
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("nextDate", date.plusDays(1));
     }
 }

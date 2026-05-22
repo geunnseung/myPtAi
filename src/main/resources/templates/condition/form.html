@@ -14,6 +14,11 @@
             <label for="date">기록 날짜</label>
             <input id="date" name="date" type="date" th:value="${recordedOn}">
             <button class="button button--secondary" type="submit">조&#8288;회</button>
+            <div class="date-shortcuts" aria-label="날짜 이동">
+                <a class="text-link" th:href="@{/conditions(date=${previousDate})}">이전날</a>
+                <a class="text-link" th:href="@{/conditions(date=${today})}">오늘</a>
+                <a class="text-link" th:href="@{/conditions(date=${nextDate})}">다음날</a>
+            </div>
         </form>
     </div>
 

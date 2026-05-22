@@ -143,8 +143,15 @@ public class WorkoutRecordController {
     private void addListAttributes(Model model, LocalDate recordedOn) {
         List<WorkoutRecordView> workouts = workoutRecordService.findByDate(recordedOn);
         model.addAttribute("recordedOn", recordedOn);
+        addDateNavigationAttributes(model, recordedOn);
         model.addAttribute("workouts", workouts);
         model.addAttribute("summary", WorkoutDailySummary.from(workouts));
+    }
+
+    private void addDateNavigationAttributes(Model model, LocalDate date) {
+        model.addAttribute("previousDate", date.minusDays(1));
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("nextDate", date.plusDays(1));
     }
 
     private LocalDate defaultDate(LocalDate date) {
