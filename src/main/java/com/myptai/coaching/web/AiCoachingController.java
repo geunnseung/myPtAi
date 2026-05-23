@@ -3,6 +3,7 @@ package com.myptai.coaching.web;
 import com.myptai.coaching.application.AiCoachingService;
 import com.myptai.coaching.application.AiCoachingView;
 import com.myptai.coaching.application.RequiredUserProfileException;
+import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.user.application.UserProfileService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -25,10 +26,16 @@ public class AiCoachingController {
 
     private final AiCoachingService aiCoachingService;
     private final UserProfileService userProfileService;
+    private final CurrentDateProvider currentDateProvider;
 
-    public AiCoachingController(AiCoachingService aiCoachingService, UserProfileService userProfileService) {
+    public AiCoachingController(
+            AiCoachingService aiCoachingService,
+            UserProfileService userProfileService,
+            CurrentDateProvider currentDateProvider
+    ) {
         this.aiCoachingService = aiCoachingService;
         this.userProfileService = userProfileService;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @GetMapping
@@ -118,12 +125,12 @@ public class AiCoachingController {
     }
 
     private LocalDate defaultDate(LocalDate date) {
-        return date == null ? LocalDate.now() : date;
+        return date == null ? currentDateProvider.today() : date;
     }
 
     private void addDateNavigationAttributes(Model model, LocalDate date) {
         model.addAttribute("previousDate", date.minusDays(1));
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("today", currentDateProvider.today());
         model.addAttribute("nextDate", date.plusDays(1));
     }
 }

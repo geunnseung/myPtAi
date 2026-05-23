@@ -1,5 +1,6 @@
 package com.myptai.workout.web;
 
+import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.user.application.UserProfileService;
 import com.myptai.workout.application.RequiredUserProfileException;
 import com.myptai.workout.application.WorkoutDailySummary;
@@ -30,10 +31,16 @@ public class WorkoutRecordController {
 
     private final WorkoutRecordService workoutRecordService;
     private final UserProfileService userProfileService;
+    private final CurrentDateProvider currentDateProvider;
 
-    public WorkoutRecordController(WorkoutRecordService workoutRecordService, UserProfileService userProfileService) {
+    public WorkoutRecordController(
+            WorkoutRecordService workoutRecordService,
+            UserProfileService userProfileService,
+            CurrentDateProvider currentDateProvider
+    ) {
         this.workoutRecordService = workoutRecordService;
         this.userProfileService = userProfileService;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @ModelAttribute("workoutTypes")
@@ -150,11 +157,11 @@ public class WorkoutRecordController {
 
     private void addDateNavigationAttributes(Model model, LocalDate date) {
         model.addAttribute("previousDate", date.minusDays(1));
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("today", currentDateProvider.today());
         model.addAttribute("nextDate", date.plusDays(1));
     }
 
     private LocalDate defaultDate(LocalDate date) {
-        return date == null ? LocalDate.now() : date;
+        return date == null ? currentDateProvider.today() : date;
     }
 }

@@ -2,6 +2,7 @@ package com.myptai.global.web;
 
 import com.myptai.coaching.application.AiCoachingService;
 import com.myptai.condition.application.DailyConditionService;
+import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.meal.application.MealDailySummary;
 import com.myptai.meal.application.MealRecordService;
 import com.myptai.meal.application.MealRecordView;
@@ -24,19 +25,22 @@ public class HomeController {
     private final WorkoutRecordService workoutRecordService;
     private final DailyConditionService dailyConditionService;
     private final AiCoachingService aiCoachingService;
+    private final CurrentDateProvider currentDateProvider;
 
     public HomeController(
             UserProfileService userProfileService,
             MealRecordService mealRecordService,
             WorkoutRecordService workoutRecordService,
             DailyConditionService dailyConditionService,
-            AiCoachingService aiCoachingService
+            AiCoachingService aiCoachingService,
+            CurrentDateProvider currentDateProvider
     ) {
         this.userProfileService = userProfileService;
         this.mealRecordService = mealRecordService;
         this.workoutRecordService = workoutRecordService;
         this.dailyConditionService = dailyConditionService;
         this.aiCoachingService = aiCoachingService;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @GetMapping("/")
@@ -46,7 +50,7 @@ public class HomeController {
             return "redirect:/profile";
         }
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = currentDateProvider.today();
         List<MealRecordView> meals = mealRecordService.findByDate(today);
         List<WorkoutRecordView> workouts = workoutRecordService.findByDate(today);
 

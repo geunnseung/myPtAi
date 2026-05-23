@@ -4,6 +4,7 @@ import com.myptai.condition.application.DailyConditionNotFoundException;
 import com.myptai.condition.application.DailyConditionService;
 import com.myptai.condition.application.RequiredUserProfileException;
 import com.myptai.condition.domain.EnergyLevel;
+import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.user.application.UserProfileService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
@@ -25,13 +26,16 @@ public class DailyConditionController {
 
     private final DailyConditionService dailyConditionService;
     private final UserProfileService userProfileService;
+    private final CurrentDateProvider currentDateProvider;
 
     public DailyConditionController(
             DailyConditionService dailyConditionService,
-            UserProfileService userProfileService
+            UserProfileService userProfileService,
+            CurrentDateProvider currentDateProvider
     ) {
         this.dailyConditionService = dailyConditionService;
         this.userProfileService = userProfileService;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @ModelAttribute("energyLevels")
@@ -119,12 +123,12 @@ public class DailyConditionController {
     }
 
     private LocalDate defaultDate(LocalDate date) {
-        return date == null ? LocalDate.now() : date;
+        return date == null ? currentDateProvider.today() : date;
     }
 
     private void addDateNavigationAttributes(Model model, LocalDate date) {
         model.addAttribute("previousDate", date.minusDays(1));
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("today", currentDateProvider.today());
         model.addAttribute("nextDate", date.plusDays(1));
     }
 }

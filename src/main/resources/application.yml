@@ -12,6 +12,9 @@ openai:
   model: gpt-5.5
   api-key: ${OPENAI_API_KEY:}
 
+myptai:
+  time-zone: Asia/Seoul
+
 management:
   endpoint:
     health:

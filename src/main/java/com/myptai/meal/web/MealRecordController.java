@@ -1,5 +1,6 @@
 package com.myptai.meal.web;
 
+import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.meal.application.MealDailySummary;
 import com.myptai.meal.application.MealRecordNotFoundException;
 import com.myptai.meal.application.MealRecordService;
@@ -29,10 +30,16 @@ public class MealRecordController {
 
     private final MealRecordService mealRecordService;
     private final UserProfileService userProfileService;
+    private final CurrentDateProvider currentDateProvider;
 
-    public MealRecordController(MealRecordService mealRecordService, UserProfileService userProfileService) {
+    public MealRecordController(
+            MealRecordService mealRecordService,
+            UserProfileService userProfileService,
+            CurrentDateProvider currentDateProvider
+    ) {
         this.mealRecordService = mealRecordService;
         this.userProfileService = userProfileService;
+        this.currentDateProvider = currentDateProvider;
     }
 
     @ModelAttribute("mealTypes")
@@ -144,11 +151,11 @@ public class MealRecordController {
 
     private void addDateNavigationAttributes(Model model, LocalDate date) {
         model.addAttribute("previousDate", date.minusDays(1));
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("today", currentDateProvider.today());
         model.addAttribute("nextDate", date.plusDays(1));
     }
 
     private LocalDate defaultDate(LocalDate date) {
-        return date == null ? LocalDate.now() : date;
+        return date == null ? currentDateProvider.today() : date;
     }
 }
