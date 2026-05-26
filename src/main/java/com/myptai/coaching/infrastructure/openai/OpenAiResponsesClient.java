@@ -3,8 +3,13 @@ package com.myptai.coaching.infrastructure.openai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.myptai.coaching.application.OpenAiClient;
 import com.myptai.coaching.application.OpenAiClientException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
@@ -22,11 +27,28 @@ public class OpenAiResponsesClient implements OpenAiClient {
     private final RestClient restClient;
     private final OpenAiProperties properties;
 
+    @Autowired
     public OpenAiResponsesClient(RestClient.Builder restClientBuilder, OpenAiProperties properties) {
-        this.restClient = restClientBuilder
-                .baseUrl(properties.getBaseUrl())
-                .build();
+        this(buildRestClient(restClientBuilder, properties), properties);
+    }
+
+    OpenAiResponsesClient(RestClient restClient, OpenAiProperties properties) {
+        this.restClient = restClient;
         this.properties = properties;
+    }
+
+    private static RestClient buildRestClient(RestClient.Builder restClientBuilder, OpenAiProperties properties) {
+        return restClientBuilder
+                .baseUrl(properties.getBaseUrl())
+                .requestFactory(createRequestFactory(properties))
+                .build();
+    }
+
+    private static ClientHttpRequestFactory createRequestFactory(OpenAiProperties properties) {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(properties.getConnectTimeout());
+        requestFactory.setReadTimeout(properties.getReadTimeout());
+        return requestFactory;
     }
 
     @Override
@@ -51,13 +73,37 @@ public class OpenAiResponsesClient implements OpenAiClient {
 
             return extractOutputText(response);
         } catch (RestClientResponseException exception) {
+            throw new OpenAiClientException(toFailureMessage(exception), exception);
+        } catch (ResourceAccessException exception) {
             throw new OpenAiClientException(
-                    "OpenAI API 요청이 실패했습니다. 상태 코드: " + exception.getStatusCode().value(),
+                    "OpenAI API에 연결하지 못했습니다. 네트워크 상태를 확인한 뒤 다시 시도해 주세요.",
                     exception
             );
         } catch (RestClientException exception) {
-            throw new OpenAiClientException("OpenAI API 요청 중 네트워크 오류가 발생했습니다.", exception);
+            throw new OpenAiClientException("OpenAI API 요청 중 오류가 발생했습니다.", exception);
         }
+    }
+
+    private String toFailureMessage(RestClientResponseException exception) {
+        HttpStatusCode statusCode = exception.getStatusCode();
+        int statusValue = statusCode.value();
+
+        if (statusValue == 400) {
+            return "OpenAI API 요청 형식이 올바르지 않습니다. 모델 설정을 확인해 주세요.";
+        }
+        if (statusValue == 401 || statusValue == 403) {
+            return "OpenAI API 인증에 실패했습니다. OPENAI_API_KEY 설정을 확인해 주세요.";
+        }
+        if (statusValue == 404) {
+            return "OpenAI API 엔드포인트를 찾지 못했습니다. base-url 설정을 확인해 주세요.";
+        }
+        if (statusValue == 429) {
+            return "OpenAI API 사용량 제한으로 코칭을 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+        }
+        if (statusCode.is5xxServerError()) {
+            return "OpenAI API 서버 오류로 코칭을 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+        }
+        return "OpenAI API 요청이 실패했습니다. 상태 코드: " + statusValue;
     }
 
     private String extractOutputText(JsonNode response) {

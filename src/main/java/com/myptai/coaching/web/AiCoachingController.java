@@ -80,7 +80,10 @@ public class AiCoachingController {
         if (coaching.succeeded()) {
             redirectAttributes.addFlashAttribute("message", "AI 코칭 답변이 생성되었습니다.");
         } else {
-            redirectAttributes.addFlashAttribute("message", "AI 코칭 요청이 저장되었지만 응답 생성에 실패했습니다.");
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "AI 코칭 요청이 저장되었지만 응답 생성에 실패했습니다. " + coaching.errorMessage()
+            );
         }
         return "redirect:/coach?date=" + coaching.targetDate() + "&requestId=" + coaching.id();
     }
