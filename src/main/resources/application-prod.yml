@@ -12,6 +12,11 @@ spring:
     enabled: true
 
 openai:
-  base-url: https://api.openai.com/v1
-  model: gpt-5.5
+  base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+  model: ${OPENAI_MODEL:gpt-5.5}
   api-key: ${OPENAI_API_KEY}
+  connect-timeout: ${OPENAI_CONNECT_TIMEOUT:3s}
+  read-timeout: ${OPENAI_READ_TIMEOUT:30s}
+
+myptai:
+  time-zone: ${MYPTAI_TIME_ZONE:Asia/Seoul}

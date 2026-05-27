@@ -18,22 +18,24 @@
 - Flyway: 데이터베이스 마이그레이션 관리
 - OpenAI API: 백엔드에서만 연동
 
-## 실행
+## 로컬 실행
 
 ```bash
 ./gradlew bootRun
 ```
 
+기본 프로필은 `local`이며 H2 인메모리 DB를 사용합니다. 별도 DB 설치 없이 `http://localhost:8080`에서 앱을 확인할 수 있습니다.
+
 ## Docker 실행
 
-로컬에서 MySQL까지 함께 실행:
+로컬에서 MySQL까지 함께 실행해 운영 프로필과 가까운 환경을 확인합니다.
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-`.env` 파일에서 MySQL 비밀번호와 `OPENAI_API_KEY` 값을 로컬 환경에 맞게 변경한 뒤 실행합니다.
+`.env` 파일에서 MySQL 비밀번호, `OPENAI_API_KEY`, 시간대, OpenAI 모델 값을 로컬 환경에 맞게 변경한 뒤 실행합니다.
 
 헬스체크:
 
@@ -57,6 +59,33 @@ docker compose down -v
 
 ```bash
 docker build -t my-pt-ai .
+```
+
+## 운영 환경변수
+
+`prod` 프로필은 외부 MySQL과 OpenAI API 키를 환경변수로 주입받습니다.
+
+| 이름 | 설명 | 예시 |
+| --- | --- | --- |
+| `MYSQL_URL` | MySQL JDBC URL | `jdbc:mysql://localhost:3306/myptai?serverTimezone=Asia/Seoul&characterEncoding=UTF-8` |
+| `MYSQL_USERNAME` | MySQL 사용자명 | `myptai` |
+| `MYSQL_PASSWORD` | MySQL 비밀번호 | `change-me` |
+| `OPENAI_API_KEY` | OpenAI API 키 | `sk-...` |
+| `OPENAI_BASE_URL` | OpenAI API base URL | `https://api.openai.com/v1` |
+| `OPENAI_MODEL` | AI 코칭에 사용할 모델 | `gpt-5.5` |
+| `OPENAI_CONNECT_TIMEOUT` | OpenAI 연결 타임아웃 | `3s` |
+| `OPENAI_READ_TIMEOUT` | OpenAI 응답 대기 타임아웃 | `30s` |
+| `MYPTAI_TIME_ZONE` | 앱의 날짜 기준 시간대 | `Asia/Seoul` |
+
+운영 프로필을 직접 실행할 때는 다음처럼 필요한 값을 주입합니다.
+
+```bash
+SPRING_PROFILES_ACTIVE=prod \
+MYSQL_URL='jdbc:mysql://localhost:3306/myptai?serverTimezone=Asia/Seoul&characterEncoding=UTF-8' \
+MYSQL_USERNAME=myptai \
+MYSQL_PASSWORD=change-me \
+OPENAI_API_KEY=sk-your-key \
+./gradlew bootRun
 ```
 
 현재 프로젝트는 실무 커밋 단위로 작게 쌓아갑니다.
