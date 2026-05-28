@@ -327,7 +327,23 @@ textarea:focus {
     border: 1px dashed var(--line);
     border-radius: 8px;
     color: var(--muted);
+    display: grid;
+    gap: 12px;
     padding: 18px;
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+.empty-state__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+section[id] {
+    scroll-margin-top: 84px;
 }
 
 .record-list {

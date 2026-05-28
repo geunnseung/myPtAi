@@ -39,7 +39,7 @@
         </article>
     </section>
 
-    <section class="panel section-gap">
+    <section id="workout-form" class="panel section-gap">
         <h2 class="section-title">운동 추가</h2>
         <form th:action="@{/workouts}" th:object="${form}" method="post" novalidate>
             <div class="form-grid">
@@ -103,7 +103,10 @@
         </div>
 
         <div class="empty-state" th:if="${#lists.isEmpty(workouts)}">
-            선택한 날짜의 운동 기록이 없습니다.
+            <p>선택한 날짜의 운동 기록이 없습니다.</p>
+            <div class="empty-state__actions">
+                <a class="button button--secondary" href="#workout-form">운동 입력하기</a>
+            </div>
         </div>
 
         <div class="record-list" th:unless="${#lists.isEmpty(workouts)}">

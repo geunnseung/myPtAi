@@ -39,7 +39,7 @@
         </article>
     </section>
 
-    <section class="panel section-gap">
+    <section id="condition-form" class="panel section-gap">
         <h2 class="section-title">컨디션 저장</h2>
         <form th:action="@{/conditions}" th:object="${form}" method="post" novalidate>
             <div class="form-grid">
@@ -108,7 +108,10 @@
 
     <section class="panel section-gap" th:if="${condition == null}">
         <div class="empty-state">
-            선택한 날짜의 컨디션 기록이 없습니다.
+            <p>선택한 날짜의 컨디션 기록이 없습니다.</p>
+            <div class="empty-state__actions">
+                <a class="button button--secondary" href="#condition-form">컨디션 입력하기</a>
+            </div>
         </div>
     </section>
 </main>

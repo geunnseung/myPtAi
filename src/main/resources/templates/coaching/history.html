@@ -15,7 +15,10 @@
 
     <section class="panel">
         <div class="empty-state" th:if="${historyRequests.isEmpty()}">
-            아직 AI 코칭 요청이 없습니다.
+            <p>아직 AI 코칭 요청이 없습니다.</p>
+            <div class="empty-state__actions">
+                <a class="button button--secondary" th:href="@{/coach} + '#coaching-form'">코칭 요청하기</a>
+            </div>
         </div>
 
         <div class="record-list" th:unless="${historyRequests.isEmpty()}">

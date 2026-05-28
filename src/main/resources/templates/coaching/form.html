@@ -43,7 +43,7 @@
         </article>
     </section>
 
-    <section class="panel section-gap">
+    <section id="coaching-form" class="panel section-gap">
         <h2 class="section-title">코칭 요청</h2>
         <form th:action="@{/coach}" th:object="${form}" method="post" novalidate>
             <div class="form-grid">
@@ -113,7 +113,10 @@
             </article>
         </div>
         <div class="empty-state" th:if="${requests.isEmpty()}">
-            선택한 날짜의 AI 코칭 요청이 없습니다.
+            <p>선택한 날짜의 AI 코칭 요청이 없습니다.</p>
+            <div class="empty-state__actions">
+                <a class="button button--secondary" href="#coaching-form">코칭 요청하기</a>
+            </div>
         </div>
     </section>
 

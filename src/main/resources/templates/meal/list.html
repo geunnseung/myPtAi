@@ -43,7 +43,7 @@
         </article>
     </section>
 
-    <section class="panel section-gap">
+    <section id="meal-form" class="panel section-gap">
         <h2 class="section-title">식단 추가</h2>
         <form th:action="@{/meals}" th:object="${form}" method="post" novalidate>
             <div class="form-grid">
@@ -114,7 +114,10 @@
         </div>
 
         <div class="empty-state" th:if="${#lists.isEmpty(meals)}">
-            선택한 날짜의 식단 기록이 없습니다.
+            <p>선택한 날짜의 식단 기록이 없습니다.</p>
+            <div class="empty-state__actions">
+                <a class="button button--secondary" href="#meal-form">식단 입력하기</a>
+            </div>
         </div>
 
         <div class="record-list" th:unless="${#lists.isEmpty(meals)}">
