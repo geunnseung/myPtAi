@@ -150,8 +150,8 @@ class AiCoachingServiceTest {
     private void createProfile() {
         userProfileService.save(new UserProfileCommand(
                 "민수",
-                GoalType.FAT_LOSS,
-                175,
+                List.of(GoalType.FAT_LOSS, GoalType.HEALTH),
+                new BigDecimal("175.5"),
                 new BigDecimal("72.5"),
                 ActivityLevel.MODERATE,
                 "한식 위주",

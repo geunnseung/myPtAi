@@ -29,7 +29,7 @@ public class UserProfileService {
 
         AppUser user = existingUser.orElseGet(() -> AppUser.create(
                 command.displayName(),
-                command.goal(),
+                command.goals(),
                 command.heightCm(),
                 command.weightKg(),
                 command.activityLevel(),
@@ -39,7 +39,7 @@ public class UserProfileService {
 
         existingUser.ifPresent(value -> value.updateProfile(
                 command.displayName(),
-                command.goal(),
+                command.goals(),
                 command.heightCm(),
                 command.weightKg(),
                 command.activityLevel(),

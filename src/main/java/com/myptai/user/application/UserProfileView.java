@@ -4,12 +4,13 @@ import com.myptai.user.domain.ActivityLevel;
 import com.myptai.user.domain.AppUser;
 import com.myptai.user.domain.GoalType;
 import java.math.BigDecimal;
+import java.util.List;
 
 public record UserProfileView(
         Long id,
         String displayName,
-        GoalType goal,
-        Integer heightCm,
+        List<GoalType> goals,
+        BigDecimal heightCm,
         BigDecimal weightKg,
         ActivityLevel activityLevel,
         String foodPreference,
@@ -20,7 +21,7 @@ public record UserProfileView(
         return new UserProfileView(
                 user.getId(),
                 user.getDisplayName(),
-                user.getGoal(),
+                user.getGoals(),
                 user.getHeightCm(),
                 user.getWeightKg(),
                 user.getActivityLevel(),

@@ -18,6 +18,7 @@ erDiagram
     app_user ||--o{ workout_record : has
     app_user ||--o{ daily_condition : has
     app_user ||--o{ ai_coaching_request : asks
+    app_user ||--o{ app_user_goal : has
 
     app_user {
         bigint id PK
@@ -25,14 +26,19 @@ erDiagram
         varchar password_hash
         varchar role
         varchar display_name
-        varchar goal
-        integer height_cm
+        decimal height_cm
         decimal weight_kg
         varchar activity_level
         varchar food_preference
         varchar restrictions
         datetime created_at
         datetime updated_at
+    }
+
+    app_user_goal {
+        bigint app_user_id FK
+        integer sort_order PK
+        varchar goal
     }
 
     meal_record {
@@ -102,14 +108,23 @@ erDiagram
 | password_hash | VARCHAR(100) | 아니오 | 해시된 비밀번호 |
 | role | VARCHAR(30) | 예 | USER |
 | display_name | VARCHAR(50) | 예 | 화면에 표시할 사용자 이름 |
-| goal | VARCHAR(50) | 예 | 예: FAT_LOSS, MUSCLE_GAIN |
-| height_cm | INT | 아니오 | 키, 단위는 cm |
+| height_cm | DECIMAL(4,1) | 아니오 | 키, 단위는 cm |
 | weight_kg | DECIMAL(5,2) | 아니오 | 프로필 기준 체중 |
 | activity_level | VARCHAR(30) | 아니오 | LOW, MODERATE, HIGH |
 | food_preference | VARCHAR(500) | 아니오 | 선호 식단 자유 입력 |
 | restrictions | VARCHAR(500) | 아니오 | 음식 제한, 일정, 부상 관련 메모 |
 | created_at | DATETIME(6) | 예 | 생성 시각 |
 | updated_at | DATETIME(6) | 예 | 마지막 수정 시각 |
+
+### app_user_goal
+
+사용자 프로필의 목표 목록을 저장합니다. 목표는 사용자가 여러 개 선택할 수 있으므로 `app_user` 컬럼에 문자열로 합치지 않고 별도 테이블로 분리합니다.
+
+| 컬럼 | 타입 | 필수 | 설명 |
+| --- | --- | --- | --- |
+| app_user_id | BIGINT | 예 | `app_user` 외래키 |
+| sort_order | INT | 예 | 목표 표시 순서 |
+| goal | VARCHAR(50) | 예 | FAT_LOSS, MUSCLE_GAIN, MAINTENANCE, HEALTH |
 
 ### meal_record
 

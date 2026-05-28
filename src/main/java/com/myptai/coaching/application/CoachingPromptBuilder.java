@@ -3,8 +3,10 @@ package com.myptai.coaching.application;
 import com.myptai.condition.domain.DailyCondition;
 import com.myptai.meal.domain.MealRecord;
 import com.myptai.user.domain.AppUser;
+import com.myptai.user.domain.GoalType;
 import com.myptai.workout.domain.WorkoutRecord;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,7 +43,7 @@ public class CoachingPromptBuilder {
     private void appendProfile(StringBuilder prompt, AppUser user) {
         prompt.append("[프로필]\n")
                 .append("- 이름: ").append(user.getDisplayName()).append('\n')
-                .append("- 목표: ").append(user.getGoal().getLabel()).append('\n')
+                .append("- 목표: ").append(goalLabels(user.getGoals())).append('\n')
                 .append("- 키: ").append(valueOrDash(user.getHeightCm())).append("cm\n")
                 .append("- 체중: ").append(valueOrDash(user.getWeightKg())).append("kg\n")
                 .append("- 활동량: ").append(user.getActivityLevel() == null ? "-" : user.getActivityLevel().getLabel()).append('\n')
@@ -113,5 +115,14 @@ public class CoachingPromptBuilder {
 
     private String valueOrDash(Object value) {
         return value == null ? "-" : value.toString();
+    }
+
+    private String goalLabels(List<GoalType> goals) {
+        if (goals == null || goals.isEmpty()) {
+            return "-";
+        }
+        return goals.stream()
+                .map(GoalType::getLabel)
+                .collect(Collectors.joining(", "));
     }
 }

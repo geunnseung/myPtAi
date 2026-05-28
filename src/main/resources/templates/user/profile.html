@@ -21,20 +21,20 @@
                     <div class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
                 </div>
 
-                <div class="field">
-                    <label for="goal">목표</label>
-                    <select id="goal" th:field="*{goal}">
-                        <option th:each="goalType : ${goalTypes}"
-                                th:value="${goalType}"
-                                th:text="${goalType.label}">
-                        </option>
-                    </select>
-                    <div class="field-error" th:if="${#fields.hasErrors('goal')}" th:errors="*{goal}"></div>
+                <div class="field field--full">
+                    <span class="field-label">목표</span>
+                    <div class="option-grid">
+                        <label class="option-card" th:each="goalType : ${goalTypes}">
+                            <input type="checkbox" th:field="*{goals}" th:value="${goalType}">
+                            <span th:text="${goalType.label}">체지방 감량</span>
+                        </label>
+                    </div>
+                    <div class="field-error" th:if="${#fields.hasErrors('goals')}" th:errors="*{goals}"></div>
                 </div>
 
                 <div class="field">
                     <label for="heightCm">키(cm)</label>
-                    <input id="heightCm" type="number" th:field="*{heightCm}" min="80" max="230" placeholder="예: 175">
+                    <input id="heightCm" type="number" th:field="*{heightCm}" min="80" max="230" step="0.1" placeholder="예: 175.5">
                     <div class="field-error" th:if="${#fields.hasErrors('heightCm')}" th:errors="*{heightCm}"></div>
                 </div>
 

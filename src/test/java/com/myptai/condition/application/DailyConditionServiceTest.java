@@ -11,6 +11,7 @@ import com.myptai.user.domain.ActivityLevel;
 import com.myptai.user.domain.GoalType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,8 +88,8 @@ class DailyConditionServiceTest {
     private void createProfile() {
         userProfileService.save(new UserProfileCommand(
                 "민수",
-                GoalType.FAT_LOSS,
-                175,
+                List.of(GoalType.FAT_LOSS),
+                new BigDecimal("175.0"),
                 new BigDecimal("72.5"),
                 ActivityLevel.MODERATE,
                 "한식 위주",

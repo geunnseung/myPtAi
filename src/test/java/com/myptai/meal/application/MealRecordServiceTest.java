@@ -102,8 +102,8 @@ class MealRecordServiceTest {
     private void createProfile() {
         userProfileService.save(new UserProfileCommand(
                 "민수",
-                GoalType.FAT_LOSS,
-                175,
+                List.of(GoalType.FAT_LOSS),
+                new BigDecimal("175.0"),
                 new BigDecimal("72.5"),
                 ActivityLevel.MODERATE,
                 "한식 위주",

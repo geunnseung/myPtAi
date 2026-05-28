@@ -1,15 +1,22 @@
 package com.myptai.user.domain;
 
 import com.myptai.global.domain.BaseTimeEntity;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "app_user")
@@ -32,12 +39,15 @@ public class AppUser extends BaseTimeEntity {
     @Column(name = "display_name", nullable = false, length = 50)
     private String displayName;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "app_user_goal", joinColumns = @JoinColumn(name = "app_user_id"))
     @Enumerated(EnumType.STRING)
     @Column(name = "goal", nullable = false, length = 50)
-    private GoalType goal;
+    @OrderColumn(name = "sort_order")
+    private List<GoalType> goals = new ArrayList<>();
 
-    @Column(name = "height_cm")
-    private Integer heightCm;
+    @Column(name = "height_cm", precision = 4, scale = 1)
+    private BigDecimal heightCm;
 
     @Column(name = "weight_kg", precision = 5, scale = 2)
     private BigDecimal weightKg;
@@ -60,8 +70,8 @@ public class AppUser extends BaseTimeEntity {
             String passwordHash,
             UserRole role,
             String displayName,
-            GoalType goal,
-            Integer heightCm,
+            List<GoalType> goals,
+            BigDecimal heightCm,
             BigDecimal weightKg,
             ActivityLevel activityLevel,
             String foodPreference,
@@ -71,7 +81,7 @@ public class AppUser extends BaseTimeEntity {
         this.passwordHash = passwordHash;
         this.role = role;
         this.displayName = displayName;
-        this.goal = goal;
+        this.goals = new ArrayList<>(normalizeGoals(goals));
         this.heightCm = heightCm;
         this.weightKg = weightKg;
         this.activityLevel = activityLevel;
@@ -81,8 +91,8 @@ public class AppUser extends BaseTimeEntity {
 
     public static AppUser create(
             String displayName,
-            GoalType goal,
-            Integer heightCm,
+            List<GoalType> goals,
+            BigDecimal heightCm,
             BigDecimal weightKg,
             ActivityLevel activityLevel,
             String foodPreference,
@@ -93,7 +103,7 @@ public class AppUser extends BaseTimeEntity {
                 null,
                 UserRole.USER,
                 displayName,
-                goal,
+                goals,
                 heightCm,
                 weightKg,
                 activityLevel,
@@ -108,7 +118,7 @@ public class AppUser extends BaseTimeEntity {
                 passwordHash,
                 UserRole.USER,
                 displayName,
-                goal,
+                List.of(goal),
                 null,
                 null,
                 ActivityLevel.MODERATE,
@@ -123,15 +133,16 @@ public class AppUser extends BaseTimeEntity {
 
     public void updateProfile(
             String displayName,
-            GoalType goal,
-            Integer heightCm,
+            List<GoalType> goals,
+            BigDecimal heightCm,
             BigDecimal weightKg,
             ActivityLevel activityLevel,
             String foodPreference,
             String restrictions
     ) {
         this.displayName = displayName;
-        this.goal = goal;
+        this.goals.clear();
+        this.goals.addAll(normalizeGoals(goals));
         this.heightCm = heightCm;
         this.weightKg = weightKg;
         this.activityLevel = activityLevel;
@@ -159,11 +170,11 @@ public class AppUser extends BaseTimeEntity {
         return displayName;
     }
 
-    public GoalType getGoal() {
-        return goal;
+    public List<GoalType> getGoals() {
+        return List.copyOf(goals);
     }
 
-    public Integer getHeightCm() {
+    public BigDecimal getHeightCm() {
         return heightCm;
     }
 
@@ -181,5 +192,16 @@ public class AppUser extends BaseTimeEntity {
 
     public String getRestrictions() {
         return restrictions;
+    }
+
+    private List<GoalType> normalizeGoals(List<GoalType> values) {
+        if (values == null || values.isEmpty()) {
+            return List.of(GoalType.FAT_LOSS);
+        }
+        List<GoalType> normalizedGoals = values.stream()
+                .filter(value -> value != null)
+                .distinct()
+                .toList();
+        return normalizedGoals.isEmpty() ? List.of(GoalType.FAT_LOSS) : normalizedGoals;
     }
 }

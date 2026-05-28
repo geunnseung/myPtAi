@@ -170,6 +170,35 @@ a {
     font-weight: 800;
 }
 
+.field-label {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.option-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--text);
+    cursor: pointer;
+    font-weight: 800;
+    padding: 11px 12px;
+}
+
+.option-card input {
+    width: auto;
+}
+
 input,
 select,
 textarea {
@@ -468,13 +497,18 @@ section[id] {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .option-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .panel {
         padding: 18px;
     }
 }
 
 @media (max-width: 480px) {
-    .summary-grid {
+    .summary-grid,
+    .option-grid {
         grid-template-columns: 1fr;
     }
 }

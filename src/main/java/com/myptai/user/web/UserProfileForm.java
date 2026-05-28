@@ -6,12 +6,14 @@ import com.myptai.user.domain.ActivityLevel;
 import com.myptai.user.domain.GoalType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserProfileForm {
 
@@ -19,12 +21,13 @@ public class UserProfileForm {
     @Size(max = 50, message = "이름은 50자 이하로 입력해 주세요.")
     private String displayName;
 
-    @NotNull(message = "목표를 선택해 주세요.")
-    private GoalType goal;
+    @NotEmpty(message = "목표를 하나 이상 선택해 주세요.")
+    private List<GoalType> goals = new ArrayList<>();
 
-    @Min(value = 80, message = "키는 80cm 이상으로 입력해 주세요.")
-    @Max(value = 230, message = "키는 230cm 이하로 입력해 주세요.")
-    private Integer heightCm;
+    @DecimalMin(value = "80.0", message = "키는 80cm 이상으로 입력해 주세요.")
+    @DecimalMax(value = "230.0", message = "키는 230cm 이하로 입력해 주세요.")
+    @Digits(integer = 3, fraction = 1, message = "키는 소수점 한 자리까지 입력해 주세요.")
+    private BigDecimal heightCm;
 
     @DecimalMin(value = "25.0", message = "체중은 25kg 이상으로 입력해 주세요.")
     @DecimalMax(value = "250.0", message = "체중은 250kg 이하로 입력해 주세요.")
@@ -41,7 +44,7 @@ public class UserProfileForm {
 
     public static UserProfileForm empty() {
         UserProfileForm form = new UserProfileForm();
-        form.goal = GoalType.FAT_LOSS;
+        form.goals = new ArrayList<>(List.of(GoalType.FAT_LOSS));
         form.activityLevel = ActivityLevel.MODERATE;
         return form;
     }
@@ -49,7 +52,7 @@ public class UserProfileForm {
     public static UserProfileForm from(UserProfileView profile) {
         UserProfileForm form = new UserProfileForm();
         form.displayName = profile.displayName();
-        form.goal = profile.goal();
+        form.goals = new ArrayList<>(profile.goals());
         form.heightCm = profile.heightCm();
         form.weightKg = profile.weightKg();
         form.activityLevel = profile.activityLevel();
@@ -61,7 +64,7 @@ public class UserProfileForm {
     public UserProfileCommand toCommand() {
         return new UserProfileCommand(
                 displayName,
-                goal,
+                goals,
                 heightCm,
                 weightKg,
                 activityLevel,
@@ -78,19 +81,19 @@ public class UserProfileForm {
         this.displayName = displayName;
     }
 
-    public GoalType getGoal() {
-        return goal;
+    public List<GoalType> getGoals() {
+        return goals;
     }
 
-    public void setGoal(GoalType goal) {
-        this.goal = goal;
+    public void setGoals(List<GoalType> goals) {
+        this.goals = goals == null ? new ArrayList<>() : goals;
     }
 
-    public Integer getHeightCm() {
+    public BigDecimal getHeightCm() {
         return heightCm;
     }
 
-    public void setHeightCm(Integer heightCm) {
+    public void setHeightCm(BigDecimal heightCm) {
         this.heightCm = heightCm;
     }
 
