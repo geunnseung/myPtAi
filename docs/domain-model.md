@@ -21,6 +21,9 @@ erDiagram
 
     app_user {
         bigint id PK
+        varchar email UK
+        varchar password_hash
+        varchar role
         varchar display_name
         varchar goal
         integer height_cm
@@ -77,7 +80,7 @@ erDiagram
         bigint user_id FK
         date target_date
         varchar question
-        text answer
+        varchar answer
         varchar model
         varchar status
         varchar error_message
@@ -90,11 +93,14 @@ erDiagram
 
 ### app_user
 
-현재 사용자 프로필을 나타냅니다. MVP는 로그인 없이 사용자 1명만 지원하지만, 나중에 로그인 기능을 추가할 때 모든 기록 테이블을 다시 설계하지 않도록 `app_user` 테이블을 처음부터 둡니다.
+가입 사용자와 사용자 프로필을 함께 나타냅니다. 인증 정보와 코칭에 필요한 프로필 정보를 같은 사용자 루트에 두고, 식단/운동/컨디션/AI 코칭 기록은 모두 `app_user`를 기준으로 분리합니다.
 
 | 컬럼 | 타입 | 필수 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | 예 | 기본키 |
+| email | VARCHAR(255) | 아니오 | 로그인 이메일, 가입 사용자는 유니크 |
+| password_hash | VARCHAR(100) | 아니오 | 해시된 비밀번호 |
+| role | VARCHAR(30) | 예 | USER |
 | display_name | VARCHAR(50) | 예 | 화면에 표시할 사용자 이름 |
 | goal | VARCHAR(50) | 예 | 예: FAT_LOSS, MUSCLE_GAIN |
 | height_cm | INT | 아니오 | 키, 단위는 cm |
@@ -167,7 +173,7 @@ erDiagram
 | user_id | BIGINT | 예 | `app_user` 외래키 |
 | target_date | DATE | 예 | 코칭 기준 날짜 |
 | question | VARCHAR(1000) | 예 | 사용자 질문 |
-| answer | TEXT | 아니오 | AI 답변 |
+| answer | VARCHAR(10000) | 아니오 | AI 답변 |
 | model | VARCHAR(100) | 아니오 | OpenAI 모델명 |
 | status | VARCHAR(30) | 예 | REQUESTED, SUCCEEDED, FAILED |
 | error_message | VARCHAR(1000) | 아니오 | API 실패 사유 |
@@ -180,15 +186,21 @@ erDiagram
 - 날짜별 운동 조회를 위해 `workout_record(user_id, recorded_on)` 인덱스를 둡니다.
 - 날짜별 컨디션은 1개만 존재해야 하므로 `daily_condition(user_id, recorded_on)`에 유니크 제약조건을 둡니다.
 - 코칭 이력 조회를 위해 `ai_coaching_request(user_id, target_date, created_at)` 인덱스를 둡니다.
+- 이메일 중복 가입을 막기 위해 `app_user(email)` 유니크 인덱스를 둡니다.
 - MVP에서는 실수로 프로필을 삭제해 기록이 함께 사라지는 일을 막기 위해 외래키 삭제 정책은 `ON DELETE RESTRICT`로 둡니다.
 
-## 초기 패키지 구조
+## 현재 패키지 구조
 
 ```text
 com.myptai
   MyPtAiApplication
   global
-    error
+    domain
+    security
+    time
+    web
+  auth
+    application
     web
   user
     domain
@@ -214,6 +226,7 @@ com.myptai
     domain
     application
     infrastructure
+      openai
     repository
     web
 ```
@@ -223,6 +236,6 @@ com.myptai
 - Entity: `MealRecord`, `WorkoutRecord`, `DailyCondition`, `AiCoachingRequest`
 - Repository: `MealRecordRepository`
 - Service: `MealRecordService`
-- Form DTO: `MealRecordCreateForm`, `MealRecordUpdateForm`
+- Form DTO: `MealRecordForm`, `WorkoutRecordForm`, `DailyConditionForm`
 - Controller: `MealRecordController`
 - Thymeleaf template: `meal/list.html`, `meal/form.html`
