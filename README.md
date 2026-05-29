@@ -4,6 +4,26 @@
 
 식단과 운동 기록을 바탕으로 개인화된 AI 코칭을 제공하는 Spring Boot 웹앱입니다.
 
+## 주요 기능 미리보기
+
+아래 화면은 테스트 코드에서 사용하는 예시 데이터 흐름을 바탕으로 로컬에서 촬영했습니다. 예시 사용자는 `민수`이며, 2026년 6월 23일 기준으로 식단, 운동, 컨디션 기록을 입력한 상태입니다.
+
+### 오늘 대시보드
+
+![오늘 대시보드](docs/images/readme-dashboard.jpg)
+
+### 식단 기록과 AI 영양 계산 입력
+
+![식단 기록과 AI 영양 계산 입력](docs/images/readme-meals.jpg)
+
+### 운동 루틴 기록
+
+![운동 루틴 기록](docs/images/readme-workouts.jpg)
+
+### 식단/운동 AI 코칭 답변
+
+![식단과 운동 기록 기반 AI 코칭 답변](docs/images/readme-coach.jpg)
+
 ## 기술 스택
 
 - Java 21
