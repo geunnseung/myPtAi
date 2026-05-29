@@ -70,6 +70,26 @@
                     <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                 </div>
 
+                <div class="field field--full">
+                    <label for="nutritionEstimateInput">AI 영양 계산 입력</label>
+                    <textarea id="nutritionEstimateInput"
+                              th:field="*{nutritionEstimateInput}"
+                              rows="3"
+                              placeholder="예: 현미밥 150g, 닭가슴살 120g, 김치 50g"></textarea>
+                    <div class="field-error"
+                         th:if="${#fields.hasErrors('nutritionEstimateInput')}"
+                         th:errors="*{nutritionEstimateInput}"></div>
+                </div>
+
+                <div class="field field--full">
+                    <button class="button button--secondary"
+                            type="submit"
+                            th:formaction="@{/meals/nutrition-estimate}">
+                        AI로 영양 계산
+                    </button>
+                    <p class="muted" th:if="${nutritionEstimateMessage}" th:text="${nutritionEstimateMessage}"></p>
+                </div>
+
                 <div class="field">
                     <label for="calories">칼로리(kcal)</label>
                     <input id="calories" type="number" th:field="*{calories}" min="0" max="10000" placeholder="예: 650">

@@ -2,6 +2,10 @@ package com.myptai.meal.web;
 
 import com.myptai.global.time.CurrentDateProvider;
 import com.myptai.meal.application.MealDailySummary;
+import com.myptai.meal.application.MealNutritionEstimateCommand;
+import com.myptai.meal.application.MealNutritionEstimateException;
+import com.myptai.meal.application.MealNutritionEstimateService;
+import com.myptai.meal.application.MealNutritionEstimateView;
 import com.myptai.meal.application.MealRecordNotFoundException;
 import com.myptai.meal.application.MealRecordService;
 import com.myptai.meal.application.MealRecordView;
@@ -29,15 +33,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class MealRecordController {
 
     private final MealRecordService mealRecordService;
+    private final MealNutritionEstimateService mealNutritionEstimateService;
     private final UserProfileService userProfileService;
     private final CurrentDateProvider currentDateProvider;
 
     public MealRecordController(
             MealRecordService mealRecordService,
+            MealNutritionEstimateService mealNutritionEstimateService,
             UserProfileService userProfileService,
             CurrentDateProvider currentDateProvider
     ) {
         this.mealRecordService = mealRecordService;
+        this.mealNutritionEstimateService = mealNutritionEstimateService;
         this.userProfileService = userProfileService;
         this.currentDateProvider = currentDateProvider;
     }
@@ -84,6 +91,17 @@ public class MealRecordController {
         return "redirect:/meals?date=" + form.getRecordedOn();
     }
 
+    @PostMapping("/nutrition-estimate")
+    public String estimateNutrition(
+            @ModelAttribute("form") MealRecordForm form,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        applyNutritionEstimate(form, bindingResult, model);
+        addListAttributes(model, defaultDate(form.getRecordedOn()));
+        return "meal/list";
+    }
+
     @GetMapping("/{mealRecordId}/edit")
     public String editForm(@PathVariable Long mealRecordId, Model model) {
         MealRecordView mealRecord = mealRecordService.getForEdit(mealRecordId);
@@ -115,6 +133,18 @@ public class MealRecordController {
         mealRecordService.update(mealRecordId, form.toCommand());
         redirectAttributes.addFlashAttribute("message", "식단 기록이 수정되었습니다.");
         return "redirect:/meals?date=" + form.getRecordedOn();
+    }
+
+    @PostMapping("/{mealRecordId}/nutrition-estimate")
+    public String estimateNutritionForEdit(
+            @PathVariable Long mealRecordId,
+            @ModelAttribute("form") MealRecordForm form,
+            BindingResult bindingResult,
+            Model model
+    ) {
+        model.addAttribute("mealRecordId", mealRecordId);
+        applyNutritionEstimate(form, bindingResult, model);
+        return "meal/form";
     }
 
     @PostMapping("/{mealRecordId}/delete")
@@ -153,6 +183,18 @@ public class MealRecordController {
         model.addAttribute("previousDate", date.minusDays(1));
         model.addAttribute("today", currentDateProvider.today());
         model.addAttribute("nextDate", date.plusDays(1));
+    }
+
+    private void applyNutritionEstimate(MealRecordForm form, BindingResult bindingResult, Model model) {
+        try {
+            MealNutritionEstimateView estimate = mealNutritionEstimateService.estimate(
+                    new MealNutritionEstimateCommand(form.getNutritionEstimateInput())
+            );
+            form.applyNutritionEstimate(estimate);
+            model.addAttribute("nutritionEstimateMessage", "AI 계산 결과를 입력칸에 반영했습니다. 저장 전 확인해 주세요.");
+        } catch (MealNutritionEstimateException exception) {
+            bindingResult.rejectValue("nutritionEstimateInput", "nutritionEstimate", exception.getMessage());
+        }
     }
 
     private LocalDate defaultDate(LocalDate date) {

@@ -3,6 +3,8 @@ package com.myptai.coaching.infrastructure.openai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.myptai.coaching.application.OpenAiClient;
 import com.myptai.coaching.application.OpenAiClientException;
+import com.myptai.meal.application.MealNutritionAiClient;
+import com.myptai.meal.application.MealNutritionEstimateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -15,13 +17,21 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 @Component
-public class OpenAiResponsesClient implements OpenAiClient {
+public class OpenAiResponsesClient implements OpenAiClient, MealNutritionAiClient {
 
-    private static final String INSTRUCTIONS = """
+    private static final String COACHING_INSTRUCTIONS = """
             너는 식단과 운동 기록을 바탕으로 현실적인 한국어 코칭을 제공하는 퍼스널 트레이너다.
             사용자의 목표, 최근 기록, 컨디션을 근거로 오늘 실행할 수 있는 식단과 운동 제안을 작성한다.
             의료 진단이나 치료처럼 말하지 말고, 통증이나 질환 위험이 보이면 전문가 상담을 권한다.
             답변은 과장하지 말고 구체적인 행동 단위로 작성한다.
+            """;
+
+    private static final String MEAL_NUTRITION_INSTRUCTIONS = """
+            너는 음식 섭취량을 바탕으로 영양성분을 추정하는 식단 기록 보조자다.
+            사용자가 입력한 음식명과 g 단위를 기준으로 총 칼로리, 단백질, 탄수화물, 지방을 계산한다.
+            응답은 설명 없이 JSON 객체만 작성한다.
+            JSON 필드는 calories, protein_g, carbs_g, fat_g 네 개만 사용한다.
+            calories는 정수 kcal, protein_g/carbs_g/fat_g는 g 단위 숫자로 작성한다.
             """;
 
     private final RestClient restClient;
@@ -58,6 +68,19 @@ public class OpenAiResponsesClient implements OpenAiClient {
 
     @Override
     public String createCoachingAnswer(String prompt) {
+        return createResponse(COACHING_INSTRUCTIONS, prompt);
+    }
+
+    @Override
+    public String estimateNutrition(String prompt) {
+        try {
+            return createResponse(MEAL_NUTRITION_INSTRUCTIONS, prompt);
+        } catch (OpenAiClientException exception) {
+            throw new MealNutritionEstimateException(exception.getMessage(), exception);
+        }
+    }
+
+    private String createResponse(String instructions, String prompt) {
         if (!properties.hasApiKey()) {
             throw new OpenAiClientException("OPENAI_API_KEY가 설정되지 않았습니다.");
         }
@@ -67,7 +90,7 @@ public class OpenAiResponsesClient implements OpenAiClient {
                     .uri("/responses")
                     .contentType(MediaType.APPLICATION_JSON)
                     .headers(headers -> headers.setBearerAuth(properties.getApiKey()))
-                    .body(new OpenAiResponseRequest(properties.getModel(), INSTRUCTIONS, prompt))
+                    .body(new OpenAiResponseRequest(properties.getModel(), instructions, prompt))
                     .retrieve()
                     .body(JsonNode.class);
 

@@ -10,6 +10,7 @@ import com.myptai.user.domain.GoalType;
 import com.myptai.user.repository.AppUserRepository;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -55,6 +56,21 @@ class AppPageRenderingTest {
 
         assertThat(html).contains("<title>" + title + "</title>");
         assertThat(html).contains("aria-current=\"page\">" + activeMenuLabel + "</a>");
+    }
+
+    @WithMockUser(username = USER_EMAIL)
+    @Test
+    void 식단_화면은_AI_영양_계산_입력과_버튼을_렌더링한다() throws Exception {
+        String html = mockMvc.perform(get("/meals"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertThat(html)
+                .contains("name=\"nutritionEstimateInput\"")
+                .contains("AI로 영양 계산")
+                .contains("/meals/nutrition-estimate");
     }
 
     private static Stream<Arguments> appPages() {

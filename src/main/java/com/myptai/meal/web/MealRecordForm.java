@@ -2,6 +2,7 @@ package com.myptai.meal.web;
 
 import com.myptai.meal.application.MealRecordCommand;
 import com.myptai.meal.application.MealRecordView;
+import com.myptai.meal.application.MealNutritionEstimateView;
 import com.myptai.meal.domain.MealType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -44,6 +45,8 @@ public class MealRecordForm {
     @Size(max = 500, message = "메모는 500자 이하로 입력해 주세요.")
     private String memo;
 
+    private String nutritionEstimateInput;
+
     public static MealRecordForm empty(LocalDate recordedOn) {
         MealRecordForm form = new MealRecordForm();
         form.recordedOn = recordedOn;
@@ -66,6 +69,16 @@ public class MealRecordForm {
 
     public MealRecordCommand toCommand() {
         return new MealRecordCommand(recordedOn, mealType, name, calories, proteinG, carbsG, fatG, memo);
+    }
+
+    public void applyNutritionEstimate(MealNutritionEstimateView estimate) {
+        calories = estimate.calories();
+        proteinG = estimate.proteinG();
+        carbsG = estimate.carbsG();
+        fatG = estimate.fatG();
+        if (name == null || name.isBlank()) {
+            name = toMealName(nutritionEstimateInput);
+        }
     }
 
     public LocalDate getRecordedOn() {
@@ -130,5 +143,24 @@ public class MealRecordForm {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getNutritionEstimateInput() {
+        return nutritionEstimateInput;
+    }
+
+    public void setNutritionEstimateInput(String nutritionEstimateInput) {
+        this.nutritionEstimateInput = nutritionEstimateInput;
+    }
+
+    private String toMealName(String value) {
+        if (value == null || value.isBlank()) {
+            return name;
+        }
+        String normalized = value.trim().replaceAll("\\s+", " ");
+        if (normalized.length() <= 100) {
+            return normalized;
+        }
+        return normalized.substring(0, 100);
     }
 }
